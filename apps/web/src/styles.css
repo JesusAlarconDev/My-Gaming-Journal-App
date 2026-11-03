@@ -1,0 +1,43 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/fraunces';
+@import '@fontsource-variable/dm-sans';
+@import '@fontsource/caveat/600.css';
+
+@theme {
+  --color-cream: #f6efe2;
+  --color-paper: #fffdf8;
+  --color-cocoa: #3e2c23;
+  --color-cocoa-soft: #6b5446;
+  --color-sage: #8fa58a;
+  --color-sage-deep: #4f6b4c;
+  --color-rose: #d9a5a0;
+  --color-rose-deep: #9a4f4a;
+  --color-orange: #d98e5a;
+  --color-orange-deep: #9a5524;
+  --color-blue: #8aa3b5;
+
+  --font-display: 'Fraunces Variable', Georgia, serif;
+  --font-sans: 'DM Sans Variable', system-ui, sans-serif;
+  --font-hand: 'Caveat', cursive;
+
+  --radius-card: 0.75rem;
+  --shadow-paper: 0 1px 2px rgb(62 44 35 / 0.08), 0 4px 12px rgb(62 44 35 / 0.08);
+}
+
+@layer base {
+  body {
+    @apply bg-cream font-sans text-cocoa antialiased;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-orange-deep);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
