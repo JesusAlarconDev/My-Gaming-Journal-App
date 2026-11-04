@@ -31,8 +31,8 @@ Los bloques siguen el orden del plan: datos → tokens y textos → lógica → 
 - [x] D4. `book.css` base: papel de la página, sombras y lomo del libro (sin animación). *Verif.: `build`; el aspecto se revisa en F2.*
 
 ## Bloque E — Páginas
-- [ ] E1. `EntryFirstPage`: nombre del juego, carátula (imagen o `CoverPlaceholder`), 3 capturas, estrellas y texto (`review`), con scroll interno accesible si el texto no cabe. *Verif.: tests con entrada completa, mínima, título largo, reseña larga y sin reseña.*
-- [ ] E2. `EntrySecondPage`: "¿Qué te gustó?", "¿Qué no te gustó?" (con texto de ayuda si están vacíos), calificaciones, "Juegos que podrían gustarte" (se omite sin sugeridos) y estado con `StatusBadge`. *Verif.: tests con los 5 estados, textos vacíos y largos, sin sugeridos.*
+- [x] E1. `EntryFirstPage`: nombre del juego, carátula (imagen o `CoverPlaceholder`), 3 capturas, estrellas y texto (`review`), con scroll interno accesible si el texto no cabe. *Verif.: tests con entrada completa, mínima, título largo, reseña larga y sin reseña.*
+- [x] E2. `EntrySecondPage`: "¿Qué te gustó?", "¿Qué no te gustó?" (con texto de ayuda si están vacíos), calificaciones, "Juegos que podrían gustarte" (se omite sin sugeridos) y estado con `StatusBadge`. *Verif.: tests con los 5 estados, textos vacíos y largos, sin sugeridos.*
 
 ## Bloque F — Doble página y adaptación
 - [ ] F1. `BookSpread`: en `spread` muestra las dos páginas; en `single`, una sola, con una cabecera corrida del juego en la segunda. *Verif.: tests con `layout` forzado (en el árbol accesible solo hay una entrada).*
