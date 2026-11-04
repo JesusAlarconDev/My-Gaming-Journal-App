@@ -28,10 +28,10 @@ Leyenda: `[ ]` pendiente · `[x]` completada **y verificada**. No empezar sin ap
 - [ ] E4. `PageHeader`, `EmptyState`, `Sticker` (decorativo, `aria-hidden`). *Verif.: revisión visual + a11y.*
 
 ## Bloque F — Layout y rutas
-- [ ] F1. Router con 4 rutas + 404. *Verif.: test de rutas.*
-- [ ] F2. `AppLayout` con `Sidebar`, `Header`, `main`, skip link. *Verif.: landmarks correctos.*
-- [ ] F3. Navegación móvil. *Verif.: manual a 360 px.*
-- [ ] F4. Estado activo (`aria-current`) y estilo. *Verif.: test.*
+- [x] F1. Router con 4 rutas + 404. *Verif.: test de rutas.*
+- [x] F2. `AppLayout` con `Sidebar`, `Header`, `main`, skip link. *Verif.: landmarks correctos.*
+- [x] F3. Navegación móvil. *Verif.: manual a 360 px.*
+- [x] F4. Estado activo (`aria-current`) y estilo. *Verif.: test.*
 
 ## Bloque G — Vistas
 - [ ] G1. Dashboard. *Verif.: render con datos, vacío y error.*
