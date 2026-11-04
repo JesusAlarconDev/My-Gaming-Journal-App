@@ -68,6 +68,7 @@ export const es = {
     nextPage: 'Página siguiente',
     entryPosition: 'Entrada {n} de {total}',
     pagePosition: 'Página {page} de 2',
+    positionWithPage: '{entry} · {page}',
     announceEntry: 'Entrada {n} de {total}: {title}',
     announcePage: 'Entrada {n} de {total}, página {page} de 2: {title}',
     firstPage: 'Primera página de {title}',

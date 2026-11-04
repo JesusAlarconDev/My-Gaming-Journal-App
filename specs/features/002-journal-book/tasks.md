@@ -19,10 +19,10 @@ Los bloques siguen el orden del plan: datos → tokens y textos → lógica → 
 - [x] B3. Añadir el grupo `book` en `lib/i18n/es.ts` (portada, controles, indicador, anuncio, secciones, categorías, "Sin calificar", textos de ayuda, capturas, diario vacío) y retirar las claves que dejen de usarse. *Verif.: `typecheck` y búsqueda de claves sin uso.*
 
 ## Bloque C — Lógica y hooks
-- [ ] C1. Crear `lib/book.ts`: `BookLayout`, `BookPosition`, `BOOK_SPREAD_MIN_WIDTH`, `nextPosition`, `previousPosition`, `canGoNext`, `canGoPrevious`, `clampPosition` y `positionLabel`. *Verif.: `lib/book.test.ts` (spread y single, extremos, 0 y 1 entradas, cambio de layout conserva la entrada).*
-- [ ] C2. Añadir `captureSlots(images)` (siempre 3 posiciones, ignora las sobrantes) y `starOffsets` (desplazamiento y giro por estrella). *Verif.: tests con 0, 1, 3 y más de 3 imágenes; offsets alternos arriba/abajo.*
-- [ ] C3. Hook `usePrefersReducedMotion`. *Verif.: test con `matchMedia` simulado.*
-- [ ] C4. Hook `useBookLayout` (medición con `ResizeObserver`); añadir stubs en `test/setup.ts` si `happy-dom` no los ofrece. *Verif.: test con `ResizeObserver` simulado (≥ 720 px → `spread`, menos → `single`).*
+- [x] C1. Crear `lib/book.ts`: `BookLayout`, `BookPosition`, `BOOK_SPREAD_MIN_WIDTH`, `nextPosition`, `previousPosition`, `canGoNext`, `canGoPrevious`, `clampPosition` y `positionLabel`. *Verif.: `lib/book.test.ts` (spread y single, extremos, 0 y 1 entradas, cambio de layout conserva la entrada).*
+- [x] C2. Añadir `captureSlots(images)` (siempre 3 posiciones, ignora las sobrantes) y `starOffsets` (desplazamiento y giro por estrella). *Verif.: tests con 0, 1, 3 y más de 3 imágenes; offsets alternos arriba/abajo.*
+- [x] C3. Hook `usePrefersReducedMotion`. *Verif.: test con `matchMedia` simulado.*
+- [x] C4. Hook `useBookLayout` (medición con `ResizeObserver`); añadir stubs en `test/setup.ts` si `happy-dom` no los ofrece. *Verif.: test con `ResizeObserver` simulado (≥ 720 px → `spread`, menos → `single`).*
 
 ## Bloque D — Piezas visuales del libro
 - [ ] D1. Componente `HandDrawnStars` (SVG, alternadas arriba/abajo, doradas rellenas / grises de contorno, texto accesible "N de 5 estrellas" o "Sin valoración"). *Verif.: tests (nº de rellenas, etiqueta, desplazamientos alternos) + revisión visual.*
