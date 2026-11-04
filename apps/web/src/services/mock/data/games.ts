@@ -1,0 +1,60 @@
+import type { Game } from '@game-journal/contracts';
+
+export const MOCK_GAMES: Game[] = [
+  {
+    id: 'game-stardew',
+    title: 'Stardew Valley',
+    platforms: ['PC', 'Switch'],
+    genres: ['Simulación', 'RPG'],
+    releaseYear: 2016,
+    developer: 'ConcernedApe',
+    description: 'Hereda una granja y construye una nueva vida en el campo.',
+  },
+  {
+    id: 'game-zelda-botw',
+    title: 'The Legend of Zelda: Breath of the Wild',
+    platforms: ['Switch'],
+    genres: ['Aventura', 'Mundo abierto'],
+    releaseYear: 2017,
+    developer: 'Nintendo EPD',
+  },
+  {
+    id: 'game-hades',
+    title: 'Hades',
+    platforms: ['PC', 'Switch', 'PS5'],
+    genres: ['Roguelike', 'Acción'],
+    releaseYear: 2020,
+    developer: 'Supergiant Games',
+  },
+  {
+    id: 'game-celeste',
+    title: 'Celeste',
+    platforms: ['PC', 'Switch'],
+    genres: ['Plataformas'],
+    releaseYear: 2018,
+    developer: 'Maddy Makes Games',
+  },
+  {
+    id: 'game-disco',
+    title: 'Disco Elysium',
+    platforms: ['PC'],
+    genres: ['RPG', 'Narrativa'],
+    releaseYear: 2019,
+    developer: 'ZA/UM',
+  },
+  {
+    id: 'game-long-title',
+    title: 'The Elder Scrolls V: Skyrim Special Edition — Anniversary Edition Collector Bundle',
+    platforms: ['PC', 'PS5', 'Xbox'],
+    genres: ['RPG', 'Mundo abierto'],
+    releaseYear: 2021,
+  },
+  {
+    id: 'game-hollow',
+    title: 'Hollow Knight',
+    platforms: ['PC', 'Switch'],
+    genres: ['Metroidvania'],
+    releaseYear: 2017,
+    developer: 'Team Cherry',
+  },
+];
