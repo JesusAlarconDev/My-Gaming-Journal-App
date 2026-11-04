@@ -26,9 +26,9 @@ Los bloques siguen el orden del plan: datos → tokens y textos → lógica → 
 
 ## Bloque D — Piezas visuales del libro
 - [ ] D1. Componente `HandDrawnStars` (SVG, alternadas arriba/abajo, doradas rellenas / grises de contorno, texto accesible "N de 5 estrellas" o "Sin valoración"). *Verif.: tests (nº de rellenas, etiqueta, desplazamientos alternos) + revisión visual.*
-- [ ] D2. Componente `CaptureFrame` (marco Polaroid con imagen y `alt`, o placeholder). *Verif.: tests con y sin imagen.*
-- [ ] D3. Componente `CategoryRatings` (gameplay, historia, música, gráficos con mini-estrellas o "Sin calificar"). *Verif.: tests con categorías completas, parciales y ausentes.*
-- [ ] D4. `book.css` base: papel de la página, sombras y lomo del libro (sin animación). *Verif.: `build`; el aspecto se revisa en F2.*
+- [x] D2. Componente `CaptureFrame` (marco Polaroid con imagen y `alt`, o placeholder). *Verif.: tests con y sin imagen.*
+- [x] D3. Componente `CategoryRatings` (gameplay, historia, música, gráficos con mini-estrellas o "Sin calificar"). *Verif.: tests con categorías completas, parciales y ausentes.*
+- [x] D4. `book.css` base: papel de la página, sombras y lomo del libro (sin animación). *Verif.: `build`; el aspecto se revisa en F2.*
 
 ## Bloque E — Páginas
 - [ ] E1. `EntryFirstPage`: nombre del juego, carátula (imagen o `CoverPlaceholder`), 3 capturas, estrellas y texto (`review`), con scroll interno accesible si el texto no cabe. *Verif.: tests con entrada completa, mínima, título largo, reseña larga y sin reseña.*

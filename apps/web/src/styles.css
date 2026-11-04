@@ -2,6 +2,7 @@
 @import '@fontsource-variable/fraunces';
 @import '@fontsource-variable/dm-sans';
 @import '@fontsource/caveat/600.css';
+@import './features/journal/book.css';
 
 @theme {
   --color-cream: #f6efe2;
