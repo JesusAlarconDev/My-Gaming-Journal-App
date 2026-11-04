@@ -22,10 +22,10 @@ Leyenda: `[ ]` pendiente · `[x]` completada **y verificada**. No empezar sin ap
 - [x] D4. Hook `useAsync` (carga/error/datos). *Verif.: test.*
 
 ## Bloque E — Design System
-- [ ] E1. Estilos globales, fondo papel/textura sutil, `focus-visible`, `prefers-reduced-motion`. *Verif.: manual.*
+- [x] E1. Estilos globales, fondo papel/textura sutil, `focus-visible`, `prefers-reduced-motion`. *Verif.: manual.*
 - [x] E2. `Button`, `Card`, `Badge/StatusBadge`. *Verif.: tests + revisión visual.*
 - [x] E3. `RatingStars` (lectura) y `PolaroidCard`. *Verif.: tests con datos incompletos.*
-- [ ] E4. `PageHeader`, `EmptyState`, `Sticker` (decorativo, `aria-hidden`). *Verif.: revisión visual + a11y.*
+- [x] E4. `PageHeader`, `EmptyState`, `Sticker` (decorativo, `aria-hidden`). *Verif.: revisión visual + a11y.*
 
 ## Bloque F — Layout y rutas
 - [x] F1. Router con 4 rutas + 404. *Verif.: test de rutas.*
@@ -34,11 +34,11 @@ Leyenda: `[ ]` pendiente · `[x]` completada **y verificada**. No empezar sin ap
 - [x] F4. Estado activo (`aria-current`) y estilo. *Verif.: test.*
 
 ## Bloque G — Vistas
-- [ ] G1. Dashboard. *Verif.: render con datos, vacío y error.*
-- [ ] G2. Journal. *Verif.: idem.*
-- [ ] G3. My Collection. *Verif.: idem.*
-- [ ] G4. My Profile. *Verif.: idem.*
-- [ ] G5. Centralizar textos de UI. *Verif.: revisión.*
+- [x] G1. Dashboard. *Verif.: render con datos, vacío y error.*
+- [x] G2. Journal. *Verif.: idem.*
+- [x] G3. My Collection. *Verif.: idem.*
+- [x] G4. My Profile. *Verif.: idem.*
+- [x] G5. Centralizar textos de UI. *Verif.: revisión.*
 
 ## Bloque H — Verificación final
 - [ ] H1. `typecheck`, `lint`, `test`, `build` pasan.
