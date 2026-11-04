@@ -9,8 +9,6 @@ const entry = (id: string, gameId: string, extra: Partial<JournalEntry> = {}): J
   gameId,
   status: 'backlog',
   loggedAt: '2026-01-01T00:00:00.000Z',
-  likedAspects: [],
-  dislikedAspects: [],
   images: [],
   ...extra,
 });

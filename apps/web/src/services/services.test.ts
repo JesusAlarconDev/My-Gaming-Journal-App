@@ -1,3 +1,4 @@
+import { RATING_CATEGORIES } from '@game-journal/contracts';
 import { createMockServices } from './mock';
 
 const services = createMockServices();
@@ -33,6 +34,37 @@ describe('mock services', () => {
     const entries = await services.journal.listEntries();
     expect(entries.some((e) => e.rating === undefined)).toBe(true);
     expect(entries.some((e) => e.startedAt === undefined)).toBe(true);
+  });
+
+  it('covers the journal book fields: free texts, category ratings and suggested games', async () => {
+    const entries = await services.journal.listEntries();
+    const complete = (e: (typeof entries)[number]) =>
+      RATING_CATEGORIES.every((category) => e.categoryRatings?.[category] !== undefined);
+
+    expect(entries.filter(complete)).toHaveLength(3);
+    expect(
+      entries.filter(
+        (e) => e.categoryRatings && !complete(e) && Object.keys(e.categoryRatings).length,
+      ),
+    ).toHaveLength(1);
+    expect(entries.filter((e) => e.categoryRatings === undefined)).toHaveLength(2);
+
+    // At least one entry has an empty or missing liked/disliked text.
+    expect(entries.some((e) => !e.likedText || !e.dislikedText)).toBe(true);
+    expect(entries.some((e) => e.likedText && e.dislikedText)).toBe(true);
+  });
+
+  it('suggests three sample games in most entries and none in at least one', async () => {
+    const entries = await services.journal.listEntries();
+    const withSuggestions = entries.filter((e) => e.suggestedGames?.length);
+    expect(withSuggestions.length).toBeGreaterThan(entries.length / 2);
+    withSuggestions.forEach((e) => expect(e.suggestedGames).toHaveLength(3));
+    expect(entries.some((e) => !e.suggestedGames?.length)).toBe(true);
+  });
+
+  it('has no captures in the mock data, so the book shows placeholders', async () => {
+    const entries = await services.journal.listEntries();
+    entries.forEach((e) => expect(e.images).toEqual([]));
   });
 
   it('does not expose mutable mock data', async () => {

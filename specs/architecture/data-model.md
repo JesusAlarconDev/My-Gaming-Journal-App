@@ -44,16 +44,20 @@ Los campos exactos de `Game` se refinarán al elegir proveedor.
 | gameId | string | |
 | status | `GameStatus` | `playing`, `completed`, `backlog`, `abandoned`, `on_hold` (alineado con el PRD) |
 | rating? | 1–5 | Entero |
-| review? | string | |
+| review? | string | Texto descriptivo del usuario; primera página del libro del diario |
 | loggedAt | ISO date | Fecha de registro |
 | startedAt? | ISO date | |
 | completedAt? | ISO date | Coherente con `startedAt` |
 | playtimeMinutes? | number | ≥ 0 |
-| likedAspects | string[] | |
-| dislikedAspects | string[] | |
-| images | string[] | URLs; el upload queda fuera de alcance |
+| likedText? | string | Texto libre: qué te gustó. Vacío o ausente = sin texto |
+| dislikedText? | string | Texto libre: qué no te gustó. Vacío o ausente = sin texto |
+| categoryRatings? | `CategoryRatings` | `Partial<Record<RatingCategory, 1–5>>`; categorías: `gameplay`, `story`, `music`, `graphics`. Cada una es opcional |
+| suggestedGames? | string[] | Títulos de juegos que podrían gustar. En la fase 1 son datos de prueba; las recomendaciones reales llegan en la fase 4 |
+| images | string[] | URLs de capturas (el libro muestra las 3 primeras); el upload queda fuera de alcance |
 
-Invariantes: `rating` ∈ {1..5}; `completedAt ≥ startedAt`; `playtimeMinutes ≥ 0`.
+Invariantes: `rating` y cada valor de `categoryRatings` ∈ {1..5}; `completedAt ≥ startedAt`; `playtimeMinutes ≥ 0`.
+
+Cambio de la feature 002: `likedAspects`/`dislikedAspects` (listas de cadenas) se sustituyen por `likedText`/`dislikedText` (texto libre).
 
 ## UserTasteProfile (futuro, no implementar)
 
@@ -61,5 +65,4 @@ Preferencias calculadas del usuario (géneros, aspectos valorados, etc.) derivad
 
 ## Pendiente de confirmar
 
-- Si `likedAspects`/`dislikedAspects` son texto libre o un vocabulario controlado.
 - Qué significa "My Collection" respecto al Journal (¿juegos con entrada? ¿incluye juegos sin jugar?). Fuera del alcance de 001; se decide en una feature posterior.

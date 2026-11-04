@@ -50,19 +50,18 @@ export function JournalEntryCard({
           <p className={cx(entry.review ? 'line-clamp-3' : 'text-cocoa-soft italic')}>
             {entry.review ?? t('journal.noReview')}
           </p>
-          <AspectList label={t('journal.liked')} aspects={entry.likedAspects} />
-          <AspectList label={t('journal.disliked')} aspects={entry.dislikedAspects} />
+          {entry.likedText && (
+            <p className="line-clamp-2 text-sm">
+              <span className="font-semibold">{t('journal.liked')}</span> {entry.likedText}
+            </p>
+          )}
+          {entry.dislikedText && (
+            <p className="line-clamp-2 text-sm">
+              <span className="font-semibold">{t('journal.disliked')}</span> {entry.dislikedText}
+            </p>
+          )}
         </div>
       </Card>
     </article>
-  );
-}
-
-function AspectList({ label, aspects }: { label: string; aspects: string[] }) {
-  if (aspects.length === 0) return null;
-  return (
-    <p className="text-sm">
-      <span className="font-semibold">{label}</span> {aspects.join(', ')}
-    </p>
   );
 }

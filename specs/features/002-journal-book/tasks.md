@@ -7,11 +7,11 @@ Leyenda: `[ ]` pendiente · `[x]` completada **y verificada**. Las tareas con ve
 Los bloques siguen el orden del plan: datos → tokens y textos → lógica → piezas visuales → páginas → doble página → portada → controles → animaciones → integración → verificación. Las animaciones (bloque I) van al final: sin ellas el libro ya es funcional.
 
 ## Bloque A — Contratos y datos mock
-- [ ] A1. En `packages/contracts`, eliminar `likedAspects`/`dislikedAspects` de `JournalEntry` y añadir `likedText?`, `dislikedText?`, `categoryRatings?` (`RATING_CATEGORIES`, `RatingCategory`, `CategoryRatings`) y `suggestedGames?`. *Verif.: `typecheck` de `packages/contracts`.*
-- [ ] A2. Migrar los datos mock: textos de "gustó / no gustó" (con alguno vacío), `categoryRatings` (3 completas, 1 parcial, 2 ausentes) y `SAMPLE_SUGGESTED_GAMES` (3 títulos genéricos) en la mayoría de entradas, dejando una sin sugeridos. *Verif.: `typecheck`.*
-- [ ] A3. Adaptar `JournalEntryCard` (Inicio) a `likedText`/`dislikedText` (truncados, o nada si están vacíos), retirar `AspectList` y ajustar el helper de `library.test.ts`. *Verif.: `typecheck` y los tests existentes en verde.*
-- [ ] A4. Ampliar los tests de servicios mock: nuevos campos, entrada sin sugeridos, categorías parciales y ausentes. *Verif.: `npm test` (servicios).*
-- [ ] A5. Actualizar `specs/architecture/data-model.md` (campos nuevos, eliminación de las listas, pendiente de "texto libre" resuelto). *Verif.: revisión del documento.*
+- [x] A1. En `packages/contracts`, eliminar `likedAspects`/`dislikedAspects` de `JournalEntry` y añadir `likedText?`, `dislikedText?`, `categoryRatings?` (`RATING_CATEGORIES`, `RatingCategory`, `CategoryRatings`) y `suggestedGames?`. *Verif.: `typecheck` de `packages/contracts`.*
+- [x] A2. Migrar los datos mock: textos de "gustó / no gustó" (con alguno vacío), `categoryRatings` (3 completas, 1 parcial, 2 ausentes) y `SAMPLE_SUGGESTED_GAMES` (3 títulos genéricos) en la mayoría de entradas, dejando una sin sugeridos. *Verif.: `typecheck`.*
+- [x] A3. Adaptar `JournalEntryCard` (Inicio) a `likedText`/`dislikedText` (truncados, o nada si están vacíos), retirar `AspectList` y ajustar el helper de `library.test.ts`. *Verif.: `typecheck` y los tests existentes en verde.*
+- [x] A4. Ampliar los tests de servicios mock: nuevos campos, entrada sin sugeridos, categorías parciales y ausentes. *Verif.: `npm test` (servicios).*
+- [x] A5. Actualizar `specs/architecture/data-model.md` (campos nuevos, eliminación de las listas, pendiente de "texto libre" resuelto). *Verif.: revisión del documento.*
 
 ## Bloque B — Tokens y textos
 - [ ] B1. Añadir en `styles.css` los tokens `page`, `leather`, `leather-dark`, `emboss`, `gold`, `gold-deep` y `star-gray` con los valores del plan. *Verif.: `build`.*

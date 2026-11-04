@@ -2,6 +2,9 @@ import type { JournalEntry } from '@game-journal/contracts';
 
 const base = { userId: 'user-1', images: [] as string[] };
 
+/** Generic placeholder titles; real recommendations arrive in a later phase. */
+const SAMPLE_SUGGESTED_GAMES = ['Juego de ejemplo A', 'Juego de ejemplo B', 'Juego de ejemplo C'];
+
 export const MOCK_ENTRIES: JournalEntry[] = [
   {
     ...base,
@@ -13,8 +16,10 @@ export const MOCK_ENTRIES: JournalEntry[] = [
     loggedAt: '2026-10-28T21:00:00.000Z',
     startedAt: '2026-09-02T00:00:00.000Z',
     playtimeMinutes: 4380,
-    likedAspects: ['Ritmo relajado', 'Música', 'Personajes'],
-    dislikedAspects: ['Inventario limitado'],
+    likedText: 'El ritmo relajado, la música de cada estación y los vecinos del pueblo.',
+    dislikedText: 'El inventario se queda corto muy pronto.',
+    categoryRatings: { gameplay: 5, story: 4, music: 5, graphics: 4 },
+    suggestedGames: SAMPLE_SUGGESTED_GAMES,
   },
   {
     ...base,
@@ -31,8 +36,10 @@ export const MOCK_ENTRIES: JournalEntry[] = [
     startedAt: '2026-07-01T00:00:00.000Z',
     completedAt: '2026-10-14T00:00:00.000Z',
     playtimeMinutes: 9120,
-    likedAspects: ['Exploración', 'Libertad', 'Banda sonora'],
-    dislikedAspects: ['Armas frágiles'],
+    likedText: 'La libertad para explorar, perderme y descubrir cosas sin que me guíen.',
+    dislikedText: 'Las armas se rompen demasiado rápido.',
+    categoryRatings: { gameplay: 5, story: 4, music: 4, graphics: 5 },
+    suggestedGames: SAMPLE_SUGGESTED_GAMES,
   },
   {
     ...base,
@@ -45,8 +52,10 @@ export const MOCK_ENTRIES: JournalEntry[] = [
     startedAt: '2026-08-10T00:00:00.000Z',
     completedAt: '2026-09-19T00:00:00.000Z',
     playtimeMinutes: 3600,
-    likedAspects: ['Narrativa', 'Combate'],
-    dislikedAspects: [],
+    likedText: 'La narrativa que avanza con cada intento y un combate muy satisfactorio.',
+    dislikedText: '',
+    categoryRatings: { gameplay: 5, story: 5, music: 4, graphics: 5 },
+    suggestedGames: SAMPLE_SUGGESTED_GAMES,
   },
   {
     ...base,
@@ -57,8 +66,10 @@ export const MOCK_ENTRIES: JournalEntry[] = [
     loggedAt: '2026-08-05T20:00:00.000Z',
     startedAt: '2026-08-01T00:00:00.000Z',
     playtimeMinutes: 420,
-    likedAspects: ['Banda sonora'],
-    dislikedAspects: ['Dificultad de algunas pantallas'],
+    likedText: 'La banda sonora acompaña cada salto.',
+    dislikedText: 'La dificultad de algunas pantallas me frustró.',
+    categoryRatings: { gameplay: 5, music: 5 },
+    suggestedGames: SAMPLE_SUGGESTED_GAMES,
   },
   {
     ...base,
@@ -68,8 +79,9 @@ export const MOCK_ENTRIES: JournalEntry[] = [
     review: 'Precioso, pero me perdí y no supe hacia dónde seguir.',
     loggedAt: '2026-06-18T19:00:00.000Z',
     playtimeMinutes: 600,
-    likedAspects: ['Ambientación'],
-    dislikedAspects: ['Falta de guía'],
+    likedText: 'La ambientación es preciosa.',
+    dislikedText: 'Falta de guía: no sabía hacia dónde seguir.',
+    suggestedGames: SAMPLE_SUGGESTED_GAMES,
   },
   {
     ...base,
@@ -77,7 +89,5 @@ export const MOCK_ENTRIES: JournalEntry[] = [
     gameId: 'game-disco',
     status: 'backlog',
     loggedAt: '2026-05-02T12:00:00.000Z',
-    likedAspects: [],
-    dislikedAspects: [],
   },
 ];
