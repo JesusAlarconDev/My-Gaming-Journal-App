@@ -17,6 +17,15 @@
   --color-blue: #8aa3b5;
   --color-blue-deep: #3f5a6e;
 
+  /* Journal book (feature 002). Contrast ratios are enforced in styles.test.ts. */
+  --color-page: #fbf5e6;
+  --color-leather: #5a3825;
+  --color-leather-dark: #3b2316;
+  --color-emboss: #ecd29c;
+  --color-gold: #e2a62a;
+  --color-gold-deep: #85590a;
+  --color-star-gray: #857f77;
+
   --font-display: 'Fraunces Variable', Georgia, serif;
   --font-sans: 'DM Sans Variable', system-ui, sans-serif;
   --font-hand: 'Caveat', cursive;

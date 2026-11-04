@@ -14,9 +14,9 @@ Los bloques siguen el orden del plan: datos → tokens y textos → lógica → 
 - [x] A5. Actualizar `specs/architecture/data-model.md` (campos nuevos, eliminación de las listas, pendiente de "texto libre" resuelto). *Verif.: revisión del documento.*
 
 ## Bloque B — Tokens y textos
-- [ ] B1. Añadir en `styles.css` los tokens `page`, `leather`, `leather-dark`, `emboss`, `gold`, `gold-deep` y `star-gray` con los valores del plan. *Verif.: `build`.*
-- [ ] B2. Test que lee los tokens de `styles.css` y comprueba los umbrales de contraste del plan (texto ≥ 4.5:1; estrellas ≥ 3:1). *Verif.: `npm test` (contraste).*
-- [ ] B3. Añadir el grupo `book` en `lib/i18n/es.ts` (portada, controles, indicador, anuncio, secciones, categorías, "Sin calificar", textos de ayuda, capturas, diario vacío) y retirar las claves que dejen de usarse. *Verif.: `typecheck` y búsqueda de claves sin uso.*
+- [x] B1. Añadir en `styles.css` los tokens `page`, `leather`, `leather-dark`, `emboss`, `gold`, `gold-deep` y `star-gray` con los valores del plan. *Verif.: `build`.*
+- [x] B2. Test que lee los tokens de `styles.css` y comprueba los umbrales de contraste del plan (texto ≥ 4.5:1; estrellas ≥ 3:1). *Verif.: `npm test` (contraste).*
+- [x] B3. Añadir el grupo `book` en `lib/i18n/es.ts` (portada, controles, indicador, anuncio, secciones, categorías, "Sin calificar", textos de ayuda, capturas, diario vacío) y retirar las claves que dejen de usarse. *Verif.: `typecheck` y búsqueda de claves sin uso.*
 
 ## Bloque C — Lógica y hooks
 - [ ] C1. Crear `lib/book.ts`: `BookLayout`, `BookPosition`, `BOOK_SPREAD_MIN_WIDTH`, `nextPosition`, `previousPosition`, `canGoNext`, `canGoPrevious`, `clampPosition` y `positionLabel`. *Verif.: `lib/book.test.ts` (spread y single, extremos, 0 y 1 entradas, cambio de layout conserva la entrada).*
