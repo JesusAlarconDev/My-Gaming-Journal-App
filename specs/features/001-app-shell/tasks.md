@@ -16,15 +16,15 @@ Leyenda: `[ ]` pendiente · `[x]` completada **y verificada**. No empezar sin ap
 - [x] C3. Configurar Vitest + Testing Library. *Verif.: un test de humo pasa.*
 
 ## Bloque D — Servicios mock
-- [ ] D1. Definir interfaces en `services/types.ts`. *Verif.: typecheck.*
-- [ ] D2. Datos mock tipados (≈6–8 juegos, ≈5–6 entradas, 1 usuario; incluir casos límite: sin rating, reseña larga, título largo, sin fechas). *Verif.: typecheck.*
-- [ ] D3. Implementar servicios mock + `services/index.ts`. *Verif.: tests unitarios de servicios.*
-- [ ] D4. Hook `useAsync` (carga/error/datos). *Verif.: test.*
+- [x] D1. Definir interfaces en `services/types.ts`. *Verif.: typecheck.*
+- [x] D2. Datos mock tipados (≈6–8 juegos, ≈5–6 entradas, 1 usuario; incluir casos límite: sin rating, reseña larga, título largo, sin fechas). *Verif.: typecheck.*
+- [x] D3. Implementar servicios mock + `services/index.ts`. *Verif.: tests unitarios de servicios.*
+- [x] D4. Hook `useAsync` (carga/error/datos). *Verif.: test.*
 
 ## Bloque E — Design System
 - [ ] E1. Estilos globales, fondo papel/textura sutil, `focus-visible`, `prefers-reduced-motion`. *Verif.: manual.*
-- [ ] E2. `Button`, `Card`, `Badge/StatusBadge`. *Verif.: tests + revisión visual.*
-- [ ] E3. `RatingStars` (lectura) y `PolaroidCard`. *Verif.: tests con datos incompletos.*
+- [x] E2. `Button`, `Card`, `Badge/StatusBadge`. *Verif.: tests + revisión visual.*
+- [x] E3. `RatingStars` (lectura) y `PolaroidCard`. *Verif.: tests con datos incompletos.*
 - [ ] E4. `PageHeader`, `EmptyState`, `Sticker` (decorativo, `aria-hidden`). *Verif.: revisión visual + a11y.*
 
 ## Bloque F — Layout y rutas

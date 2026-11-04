@@ -9,12 +9,13 @@
   --color-cocoa: #3e2c23;
   --color-cocoa-soft: #6b5446;
   --color-sage: #8fa58a;
-  --color-sage-deep: #4f6b4c;
+  --color-sage-deep: #3d5a3a;
   --color-rose: #d9a5a0;
-  --color-rose-deep: #9a4f4a;
+  --color-rose-deep: #8a4440;
   --color-orange: #d98e5a;
-  --color-orange-deep: #9a5524;
+  --color-orange-deep: #8a4a1c;
   --color-blue: #8aa3b5;
+  --color-blue-deep: #3f5a6e;
 
   --font-display: 'Fraunces Variable', Georgia, serif;
   --font-sans: 'DM Sans Variable', system-ui, sans-serif;
@@ -22,11 +23,22 @@
 
   --radius-card: 0.75rem;
   --shadow-paper: 0 1px 2px rgb(62 44 35 / 0.08), 0 4px 12px rgb(62 44 35 / 0.08);
+  --shadow-paper-lift: 0 2px 4px rgb(62 44 35 / 0.1), 0 10px 24px rgb(62 44 35 / 0.14);
 }
 
 @layer base {
   body {
     @apply bg-cream font-sans text-cocoa antialiased;
+    /* Subtle paper grain: two offset dot grids, no image assets. */
+    background-image:
+      radial-gradient(rgb(62 44 35 / 0.045) 1px, transparent 1px),
+      radial-gradient(rgb(62 44 35 / 0.03) 1px, transparent 1px);
+    background-size:
+      24px 24px,
+      37px 37px;
+    background-position:
+      0 0,
+      11px 17px;
   }
   :focus-visible {
     outline: 3px solid var(--color-orange-deep);
