@@ -1,6 +1,6 @@
 # 001 — App Shell & Design System · Spec
 
-- **Estado:** Aprobada; en implementación
+- **Estado:** Implementada
 - **Fase:** 1 — Frontend Foundation
 
 ## 1. Objetivo

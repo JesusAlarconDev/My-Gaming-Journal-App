@@ -41,8 +41,8 @@ Leyenda: `[ ]` pendiente · `[x]` completada **y verificada**. No empezar sin ap
 - [x] G5. Centralizar textos de UI. *Verif.: revisión.*
 
 ## Bloque H — Verificación final
-- [ ] H1. `typecheck`, `lint`, `test`, `build` pasan.
-- [ ] H2. Checklist de accesibilidad (teclado, foco, skip link, `h1` único, contraste AA, reduced motion).
-- [ ] H3. Revisión responsive (360 / 768 / 1280) sin scroll horizontal.
-- [ ] H4. Confirmar que ningún componente importa mock directamente y que no hay red/backend.
-- [ ] H5. Actualizar `README.md` raíz y marcar spec como "Implementada".
+- [x] H1. `typecheck`, `lint`, `test`, `build` pasan.
+- [x] H2. Checklist de accesibilidad (teclado, foco, skip link, `h1` único, contraste AA, reduced motion).
+- [x] H3. Revisión responsive (360 / 768 / 1280) sin scroll horizontal.
+- [x] H4. Confirmar que ningún componente importa mock directamente y que no hay red/backend.
+- [x] H5. Actualizar `README.md` raíz y marcar spec como "Implementada".

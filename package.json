@@ -3,7 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "npm run dev -w @game-journal/web",
     "build": "npm run build -w @game-journal/web",
@@ -22,5 +25,7 @@
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.72.1"
   },
-  "engines": { "node": ">=22" }
+  "engines": {
+    "node": ">=22"
+  }
 }

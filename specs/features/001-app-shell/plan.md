@@ -1,6 +1,6 @@
 # 001 — App Shell & Design System · Plan
 
-- **Estado:** Borrador (depende de la aprobación de `spec.md`)
+- **Estado:** Implementado
 
 ## 1. Enfoque
 
