@@ -1,7 +1,7 @@
 ---
 name: sdd-specify
 description: Fase 1 de SDD en Game Journal. Redacta el borrador de spec.md de una feature nueva (specs/features/NNN-nombre/). Úsala cuando el usuario quiera especificar, definir o empezar una nueva feature, antes de planificar o escribir código.
-argument-hint: "[descripción de la feature]"
+argument-hint: '[descripción de la feature]'
 allowed-tools: Read, Glob, Grep, AskUserQuestion, Write(/specs/**), Edit(/specs/**)
 ---
 

@@ -19,7 +19,7 @@ Convierte el plan en una lista ordenada de tareas. **No implementa.**
 3. Cada tarea:
    - tiene un id (`A1`, `A2`…) y una frase concreta;
    - es lo bastante pequeña para completarse y verificarse de forma independiente;
-   - termina con *Verif.:* y **cómo** se comprueba (test concreto, comando, o "manual" / "revisión visual" cuando solo el usuario puede comprobarlo);
+   - termina con _Verif.:_ y **cómo** se comprueba (test concreto, comando, o "manual" / "revisión visual" cuando solo el usuario puede comprobarlo);
    - empieza como `- [ ]`.
 4. Añade un bloque final de **Verificación** que cubra: `typecheck`, `lint`, `test`, `build`; cada criterio de aceptación de la spec; accesibilidad; responsive; y actualización de documentos (estado de spec/plan, `data-model.md` si cambió, README si procede).
 
