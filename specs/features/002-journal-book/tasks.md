@@ -56,13 +56,13 @@ Los bloques siguen el orden del plan: datos → tokens y textos → lógica → 
 - [x] G3. Revisión visual de la portada (cuero, costuras, relieve, pestaña de abrir) y de la X de cierre. *Verif.: manual (usuario).*
 
 ## Bloque H — Controles y accesibilidad
-- [ ] H1. `BookControls` (con `BookIconButton`): anterior, siguiente (`aria-disabled` en los extremos) e indicador, con etiquetas distintas en `single` ("Página") y `spread` ("Entrada"). *Verif.: tests de extremos y etiquetas.*
-- [ ] H2. Conectar la navegación en `JournalBook` con `lib/book.ts`: orden de más reciente a más antigua, ignorar pulsaciones repetidas durante la transición y región `aria-live` ("Entrada 2 de 6: Hades"). *Verif.: tests con datos mock (orden, indicador, anuncio, 1 entrada).*
-- [ ] H3. Atajo de teclado ← → dentro del libro. *Verif.: test.*
-- [ ] H4. Estados cargando, error y diario vacío (libro con página en blanco, mensaje y controles inactivos). *Verif.: tests de `JournalBook`/vista.*
+- [x] H1. `BookControls` (con `BookIconButton`): anterior, siguiente (`aria-disabled` en los extremos) e indicador, con etiquetas distintas en `single` ("Página") y `spread` ("Entrada"). *Verif.: tests de extremos y etiquetas.*
+- [x] H2. Conectar la navegación en `JournalBook` con `lib/book.ts`: orden de más reciente a más antigua y región `aria-live` ("Entrada 2 de 6: Hades"). *Verif.: tests con datos mock (orden, indicador, anuncio, 1 entrada).*
+- [x] H3. Atajo de teclado ← → dentro del libro. *Verif.: test.*
+- [x] H4. Estados cargando, error y diario vacío (libro con página en blanco, mensaje y controles inactivos). *Verif.: tests de `JournalBook`/vista.*
 
 ## Bloque I — Animaciones (capa visual)
-- [ ] I1. `PageTurnOverlay` para pasar página en `spread` (siguiente y anterior): capa `aria-hidden`/`inert`, retirada con `animationend` y un temporizador de seguridad. *Verif.: tests con temporizadores simulados (capa montada y retirada; el árbol accesible conserva una sola entrada) + manual.*
+- [ ] I1. `PageTurnOverlay` para pasar página en `spread` (siguiente y anterior): capa `aria-hidden`/`inert`, retirada con `animationend` y un temporizador de seguridad. Mientras la capa está montada se ignoran las pulsaciones repetidas de anterior/siguiente (cláusula movida desde H2: sin transición no hay nada que ignorar). *Verif.: tests con temporizadores simulados (capa montada y retirada; pulsaciones repetidas ignoradas durante la transición; el árbol accesible conserva una sola entrada) + manual.*
 - [ ] I2. Pasar página en `single`. *Verif.: tests + manual.*
 - [ ] I3. Animación de abrir y cerrar la portada. *Verif.: tests + manual.*
 - [ ] I4. Movimiento reducido: sin capa animada y con cambio instantáneo. *Verif.: test con `matchMedia` en `reduce` + manual con la opción del sistema.*
