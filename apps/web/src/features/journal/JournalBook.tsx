@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import { useBookLayout } from '@/hooks/useBookLayout';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 import {
   START_POSITION,
   announcementLabel,
@@ -17,6 +18,8 @@ import { BookCover } from './BookCover';
 import { BookControls } from './BookControls';
 import { BookIconButton } from './BookIconButton';
 import { BookSpread } from './BookSpread';
+import { CoverOpenOverlay } from './CoverOpenOverlay';
+import { PageTurnOverlay, type TurnDirection } from './PageTurnOverlay';
 
 interface JournalBookProps {
   /** Entries newest first, already joined with their game. */
@@ -31,6 +34,8 @@ interface JournalBookProps {
  * The journal as a book: it always starts closed, opens on the first entry and can be closed again.
  * Focus goes to the entry when the book opens and back to the cover when it closes; it stays on the
  * pressed button when turning pages, and each change is announced through a polite live region.
+ * Opening, closing and turning pages play visual-only animation layers, skipped when the user asks
+ * for reduced motion; presses are ignored while a page is turning.
  */
 export function JournalBook({
   items,
@@ -49,6 +54,12 @@ export function JournalBook({
   const bookRef = useRef<HTMLDivElement>(null);
   const wasOpen = useRef(false);
   const [announcement, setAnnouncement] = useState('');
+  const reducedMotion = usePrefersReducedMotion();
+  const [turn, setTurn] = useState<TurnDirection | null>(null);
+  const [opening, setOpening] = useState(false);
+  const [coverArriving, setCoverArriving] = useState(false);
+  const endTurn = useCallback(() => setTurn(null), []);
+  const endOpening = useCallback(() => setOpening(false), []);
 
   useEffect(() => {
     if (open) entryRef.current?.focus();
@@ -62,19 +73,30 @@ export function JournalBook({
   const openBook = () => {
     setPosition(START_POSITION);
     setAnnouncement('');
+    setCoverArriving(false);
+    setOpening(!reducedMotion);
     setOpen(true);
   };
 
-  const goTo = (target: BookPosition) => {
+  const closeBook = () => {
+    setTurn(null);
+    setOpening(false);
+    setCoverArriving(!reducedMotion);
+    setOpen(false);
+  };
+
+  const goTo = (target: BookPosition, direction: TurnDirection) => {
+    if (turn) return; // A page is still turning: ignore repeated presses.
     if (target === current) return; // Already at the end: nothing to turn.
     setPosition(target);
     const entry = items[target.entryIndex];
     if (entry) {
       setAnnouncement(announcementLabel(target, layout, items.length, entry.game.title));
     }
+    if (!reducedMotion) setTurn(direction);
   };
-  const goNext = () => goTo(nextPosition(current, layout, items.length));
-  const goPrevious = () => goTo(previousPosition(current, layout, items.length));
+  const goNext = () => goTo(nextPosition(current, layout, items.length), 'next');
+  const goPrevious = () => goTo(previousPosition(current, layout, items.length), 'previous');
 
   // Arrow keys turn the pages anywhere inside the open book. A native listener is used because the
   // book is a group, not an interactive element, and Alt+Arrow (browser history) must be left alone.
@@ -122,9 +144,11 @@ export function JournalBook({
                 <BlankSpread layout={layout} />
               )}
             </div>
+            {turn && item && <PageTurnOverlay direction={turn} layout={layout} onDone={endTurn} />}
+            {opening && <CoverOpenOverlay onDone={endOpening} />}
             <BookIconButton
               label={t('book.close')}
-              onClick={() => setOpen(false)}
+              onClick={closeBook}
               className="absolute top-3 right-3 z-10"
             >
               <X aria-hidden="true" size={22} strokeWidth={2.5} />
@@ -142,7 +166,7 @@ export function JournalBook({
           </p>
         </div>
       ) : (
-        <BookCover ref={coverRef} onOpen={openBook} />
+        <BookCover ref={coverRef} onOpen={openBook} arriving={coverArriving} />
       )}
     </div>
   );

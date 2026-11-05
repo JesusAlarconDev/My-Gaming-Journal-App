@@ -5,6 +5,8 @@ import { useT } from '@/lib/i18n';
 
 interface BookCoverProps {
   onOpen: () => void;
+  /** Plays the cover-closing animation when it appears (the book was just closed). */
+  arriving?: boolean;
   /** Lets the book return focus to the cover after closing. */
   ref?: Ref<HTMLButtonElement>;
   className?: string;
@@ -15,7 +17,7 @@ interface BookCoverProps {
  * The tab in the bottom-right corner is part of that button, not a second control, so its text
  * is read together with the title.
  */
-export function BookCover({ onOpen, ref, className }: BookCoverProps) {
+export function BookCover({ onOpen, arriving = false, ref, className }: BookCoverProps) {
   const t = useT();
 
   return (
@@ -25,6 +27,7 @@ export function BookCover({ onOpen, ref, className }: BookCoverProps) {
       onClick={onOpen}
       className={cx(
         'book-cover transition-transform duration-200 motion-safe:hover:-translate-y-1',
+        arriving && 'book-cover--arriving',
         className,
       )}
     >

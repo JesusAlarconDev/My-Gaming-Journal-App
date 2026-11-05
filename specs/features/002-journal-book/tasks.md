@@ -62,11 +62,11 @@ Los bloques siguen el orden del plan: datos → tokens y textos → lógica → 
 - [x] H4. Estados cargando, error y diario vacío (libro con página en blanco, mensaje y controles inactivos). *Verif.: tests de `JournalBook`/vista.*
 
 ## Bloque I — Animaciones (capa visual)
-- [ ] I1. `PageTurnOverlay` para pasar página en `spread` (siguiente y anterior): capa `aria-hidden`/`inert`, retirada con `animationend` y un temporizador de seguridad. Mientras la capa está montada se ignoran las pulsaciones repetidas de anterior/siguiente (cláusula movida desde H2: sin transición no hay nada que ignorar). *Verif.: tests con temporizadores simulados (capa montada y retirada; pulsaciones repetidas ignoradas durante la transición; el árbol accesible conserva una sola entrada) + manual.*
-- [ ] I2. Pasar página en `single`. *Verif.: tests + manual.*
-- [ ] I3. Animación de abrir y cerrar la portada. *Verif.: tests + manual.*
-- [ ] I4. Movimiento reducido: sin capa animada y con cambio instantáneo. *Verif.: test con `matchMedia` en `reduce` + manual con la opción del sistema.*
-- [ ] I5. Revisión de fluidez en escritorio y en un móvil real. *Verif.: manual (usuario).*
+- [x] I1. `PageTurnOverlay` para pasar página en `spread` (siguiente y anterior): capa `aria-hidden`/`inert`, retirada con `animationend` y un temporizador de seguridad. Mientras la capa está montada se ignoran las pulsaciones repetidas de anterior/siguiente (cláusula movida desde H2: sin transición no hay nada que ignorar). *Verif.: tests con temporizadores simulados (capa montada y retirada; pulsaciones repetidas ignoradas durante la transición; el árbol accesible conserva una sola entrada) + manual.*
+- [x] I2. Pasar página en `single`. *Verif.: tests + manual.*
+- [x] I3. Animación de abrir y cerrar la portada. *Verif.: tests + manual.*
+- [x] I4. Movimiento reducido: sin capa animada y con cambio instantáneo. *Verif.: test con `matchMedia` en `reduce` + manual con la opción del sistema.*
+- [x] I5. Revisión de fluidez en escritorio y en un móvil real. *Verif.: manual (usuario).*
 
 ## Bloque J — Integración
 - [ ] J1. `JournalPage`: `PageHeader` (único `h1`), título del documento y `JournalBook` en `/journal`, sustituyendo la lista; actualizar `views.test.tsx` (Diario) y retirar los textos i18n sin uso. *Verif.: tests de vista (cargando, error, vacío, con datos) y `routes.test.tsx`.*

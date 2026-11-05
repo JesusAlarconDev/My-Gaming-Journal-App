@@ -17,6 +17,12 @@ export const BOOK_SPREAD_MIN_WIDTH = 720;
 /** Maximum width (px) of the book container for showing one capture at a time. */
 export const BOOK_COMPACT_MAX_WIDTH = 550;
 
+/**
+ * Longer than any book animation (see `book.css`). Animation layers remove themselves on
+ * `animationend`; this timer is the fallback so a missed event can never leave a layer stuck.
+ */
+export const BOOK_ANIMATION_SAFETY_MS = 1000;
+
 export const CAPTURE_SLOT_COUNT = 3;
 
 export const START_POSITION: BookPosition = { entryIndex: 0, side: 'first' };
