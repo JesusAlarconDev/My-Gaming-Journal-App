@@ -26,6 +26,8 @@
   --color-gold: #e2a62a;
   --color-gold-deep: #85590a;
   --color-star-gray: #857f77;
+  /* Unrated sticker stars: soft on purpose; the state is also announced as text. */
+  --color-star-off: #c9c3ba;
 
   --font-display: 'Fraunces Variable', Georgia, serif;
   --font-sans: 'DM Sans Variable', system-ui, sans-serif;

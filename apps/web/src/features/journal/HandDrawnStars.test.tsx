@@ -16,7 +16,7 @@ describe('HandDrawnStars', () => {
     expect(screen.getByRole('img', { name: `${value} de 5 estrellas` })).toBeInTheDocument();
   });
 
-  it('shows five gray outlined stars and "Sin valoración" without a rating', () => {
+  it('shows five gray stars and "Sin valoración" without a rating', () => {
     const { container } = render(<HandDrawnStars />);
     expect(filledCount(container)).toBe(0);
     expect(screen.getByRole('img', { name: 'Sin valoración' })).toBeInTheDocument();
@@ -33,17 +33,19 @@ describe('HandDrawnStars', () => {
     ]);
   });
 
-  it('does not rely on color alone: rated stars are filled, unrated ones have no fill', () => {
+  it('draws solid stickers: gold with a white border if rated, flat light gray all over if not', () => {
     const { container } = render(<HandDrawnStars value={2} />);
     const [rated, unrated] = [stars(container)[0]!, stars(container)[4]!];
-    expect(rated.querySelector('path')).toHaveClass('fill-gold');
-    expect(unrated.querySelector('path')).toHaveClass('fill-none');
+    expect(rated.querySelector('path')).toHaveClass('fill-gold', 'stroke-white');
+    expect(unrated.querySelector('path')).toHaveClass('fill-star-off', 'stroke-star-off');
+    expect(unrated.querySelector('path')).not.toHaveClass('fill-none');
+    expect(unrated.querySelector('path')).toHaveAttribute('paint-order', 'stroke');
   });
 
   it('places the stars alternately high and low, left to right', () => {
     const { container } = render(<HandDrawnStars value={5} />);
     const ys = stars(container).map(translateY);
-    const baseline = 20;
+    const baseline = 24;
     expect(ys[0]).toBeLessThan(baseline);
     expect(ys[1]).toBeGreaterThan(baseline);
     expect(ys[2]).toBeLessThan(baseline);

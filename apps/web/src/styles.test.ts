@@ -36,6 +36,7 @@ describe('journal book color tokens', () => {
       gold: '#e2a62a',
       'gold-deep': '#85590a',
       'star-gray': '#857f77',
+      'star-off': '#c9c3ba',
     };
     for (const [name, value] of Object.entries(expected)) {
       expect(token(name).toLowerCase()).toBe(value);
