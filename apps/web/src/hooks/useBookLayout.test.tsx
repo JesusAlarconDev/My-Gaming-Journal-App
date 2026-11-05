@@ -1,5 +1,5 @@
 import { act, render, screen } from '@testing-library/react';
-import { BOOK_SPREAD_MIN_WIDTH } from '@/lib/book';
+import { BOOK_COMPACT_MAX_WIDTH, BOOK_SPREAD_MIN_WIDTH } from '@/lib/book';
 import { useBookLayout } from './useBookLayout';
 
 type ResizeCallback = (entries: { contentRect: { width: number } }[]) => void;
@@ -31,11 +31,12 @@ function measuredWidth(width: number) {
 }
 
 function Probe() {
-  const [ref, layout] = useBookLayout<HTMLDivElement>();
-  return <div ref={ref} data-testid="container" data-layout={layout} />;
+  const [ref, layout, compact] = useBookLayout<HTMLDivElement>();
+  return <div ref={ref} data-testid="container" data-layout={layout} data-compact={compact} />;
 }
 
 const layout = () => screen.getByTestId('container').dataset.layout;
+const compact = () => screen.getByTestId('container').dataset.compact;
 
 beforeEach(stubResizeObserver);
 
@@ -79,5 +80,32 @@ describe('useBookLayout', () => {
     measuredWidth(900);
     render(<Probe />);
     expect(layout()).toBe('spread');
+  });
+
+  describe('compact (one capture at a time)', () => {
+    it('is compact at 550 px and not at 551 px, on mount', () => {
+      measuredWidth(BOOK_COMPACT_MAX_WIDTH);
+      const first = render(<Probe />);
+      expect(compact()).toBe('true');
+      first.unmount();
+
+      measuredWidth(BOOK_COMPACT_MAX_WIDTH + 1);
+      render(<Probe />);
+      expect(compact()).toBe('false');
+    });
+
+    it('follows the container width when it is resized, without touching the layout rule', () => {
+      measuredWidth(800);
+      render(<Probe />);
+      expect([layout(), compact()]).toEqual(['spread', 'false']);
+      resizeTo(600);
+      expect([layout(), compact()]).toEqual(['single', 'false']);
+      resizeTo(550);
+      expect([layout(), compact()]).toEqual(['single', 'true']);
+      resizeTo(360);
+      expect([layout(), compact()]).toEqual(['single', 'true']);
+      resizeTo(551);
+      expect([layout(), compact()]).toEqual(['single', 'false']);
+    });
   });
 });

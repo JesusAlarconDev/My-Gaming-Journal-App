@@ -1,5 +1,10 @@
 import {
+  BOOK_COMPACT_MAX_WIDTH,
   BOOK_SPREAD_MIN_WIDTH,
+  announcementLabel,
+  canStepCapture,
+  isCompactWidth,
+  stepCapture,
   START_POSITION,
   canGoNext,
   canGoPrevious,
@@ -145,6 +150,21 @@ describe('positionLabel', () => {
   });
 });
 
+describe('announcementLabel', () => {
+  it('announces the entry and its game in a spread', () => {
+    expect(announcementLabel(at(1), 'spread', 6, 'Hades')).toBe('Entrada 2 de 6: Hades');
+  });
+
+  it('adds the page in single', () => {
+    expect(announcementLabel(at(1), 'single', 6, 'Hades')).toBe(
+      'Entrada 2 de 6, página 1 de 2: Hades',
+    );
+    expect(announcementLabel(at(1, 'second'), 'single', 6, 'Hades')).toBe(
+      'Entrada 2 de 6, página 2 de 2: Hades',
+    );
+  });
+});
+
 describe('captureSlots', () => {
   it('always returns three slots', () => {
     expect(captureSlots([])).toEqual([undefined, undefined, undefined]);
@@ -154,6 +174,60 @@ describe('captureSlots', () => {
 
   it('ignores images beyond the third', () => {
     expect(captureSlots(['a', 'b', 'c', 'd', 'e'])).toEqual(['a', 'b', 'c']);
+  });
+});
+
+describe('isCompactWidth', () => {
+  it('is compact at 550 px and below, not above', () => {
+    expect(isCompactWidth(BOOK_COMPACT_MAX_WIDTH)).toBe(true);
+    expect(isCompactWidth(550)).toBe(true);
+    expect(isCompactWidth(551)).toBe(false);
+    expect(isCompactWidth(360)).toBe(true);
+    expect(isCompactWidth(0)).toBe(true);
+  });
+
+  it('is always narrower than the spread layout threshold', () => {
+    expect(BOOK_COMPACT_MAX_WIDTH).toBeLessThan(BOOK_SPREAD_MIN_WIDTH);
+  });
+});
+
+describe('stepCapture', () => {
+  it('moves one capture at a time in both directions', () => {
+    expect(stepCapture(0, 'next')).toBe(1);
+    expect(stepCapture(1, 'next')).toBe(2);
+    expect(stepCapture(2, 'previous')).toBe(1);
+    expect(stepCapture(1, 'previous')).toBe(0);
+  });
+
+  it('stops at the ends instead of wrapping around', () => {
+    expect(stepCapture(2, 'next')).toBe(2);
+    expect(stepCapture(0, 'previous')).toBe(0);
+  });
+
+  it('reports the ends through canStepCapture', () => {
+    expect(canStepCapture(0, 'previous')).toBe(false);
+    expect(canStepCapture(0, 'next')).toBe(true);
+    expect(canStepCapture(1, 'previous')).toBe(true);
+    expect(canStepCapture(1, 'next')).toBe(true);
+    expect(canStepCapture(2, 'previous')).toBe(true);
+    expect(canStepCapture(2, 'next')).toBe(false);
+  });
+
+  it('pulls an out-of-range index back inside the three captures', () => {
+    expect(stepCapture(7, 'next')).toBe(2);
+    expect(stepCapture(7, 'previous')).toBe(1);
+    expect(stepCapture(-3, 'previous')).toBe(0);
+    expect(stepCapture(-3, 'next')).toBe(1);
+  });
+
+  it('visits the three captures once each, going forward and back', () => {
+    let index = 0;
+    const forward = [index];
+    while (canStepCapture(index, 'next')) forward.push((index = stepCapture(index, 'next')));
+    expect(forward).toEqual([0, 1, 2]);
+    const back = [index];
+    while (canStepCapture(index, 'previous')) back.push((index = stepCapture(index, 'previous')));
+    expect(back).toEqual([2, 1, 0]);
   });
 });
 

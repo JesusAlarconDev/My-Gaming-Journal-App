@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { EntryFirstPage } from './EntryFirstPage';
 import { COMPLETE_ENTRY, makeItem } from './testItems';
 
@@ -79,5 +79,70 @@ describe('EntryFirstPage', () => {
   it('preserves line breaks written by the player', () => {
     render(<EntryFirstPage item={makeItem({ review: 'Línea 1\nLínea 2' })} />);
     expect(screen.getByText(/Línea 1/)).toHaveClass('whitespace-pre-line');
+  });
+
+  describe('compact captures (narrow book)', () => {
+    const images = ['/a.png', '/b.png', '/c.png'];
+    const group = () => screen.getByRole('group', { name: 'Capturas' });
+    const next = () => screen.getByRole('button', { name: 'Captura siguiente' });
+
+    it('shows three frames in a row by default and no carousel controls', () => {
+      render(<EntryFirstPage item={makeItem({ images })} />);
+      expect(within(group()).getAllByRole('img')).toHaveLength(3);
+      expect(screen.queryByRole('button', { name: /Captura/ })).not.toBeInTheDocument();
+    });
+
+    it('shows a single capture with controls when compact', () => {
+      render(<EntryFirstPage item={makeItem({ images })} compactCaptures />);
+      expect(within(group()).getAllByRole('img')).toHaveLength(1);
+      expect(screen.getByText('Captura 1 de 3')).toBeInTheDocument();
+      fireEvent.click(next());
+      expect(within(group()).getByRole('img')).toHaveAttribute('src', '/b.png');
+      expect(screen.getByText('Captura 2 de 3')).toBeInTheDocument();
+    });
+
+    it('keeps the capture on show when the book crosses the threshold and comes back', () => {
+      const item = makeItem({ images });
+      const { rerender } = render(<EntryFirstPage item={item} compactCaptures />);
+      fireEvent.click(next());
+      fireEvent.click(next());
+      expect(screen.getByText('Captura 3 de 3')).toBeInTheDocument();
+
+      rerender(<EntryFirstPage item={item} compactCaptures={false} />);
+      expect(within(group()).getAllByRole('img')).toHaveLength(3);
+
+      rerender(<EntryFirstPage item={item} compactCaptures />);
+      expect(screen.getByText('Captura 3 de 3')).toBeInTheDocument();
+      expect(within(group()).getByRole('img')).toHaveAttribute('src', '/c.png');
+    });
+
+    it('shows one empty frame without controls when there are no captures', () => {
+      render(<EntryFirstPage item={makeItem()} compactCaptures />);
+      expect(group().children).toHaveLength(1);
+      expect(screen.queryByRole('button', { name: /Captura/ })).not.toBeInTheDocument();
+      expect(screen.queryByText(/Captura \d de 3/)).not.toBeInTheDocument();
+    });
+
+    it('only walks through the first three of more than three images', () => {
+      render(
+        <EntryFirstPage
+          item={makeItem({ images: [...images, '/d.png', '/e.png'] })}
+          compactCaptures
+        />,
+      );
+      fireEvent.click(next());
+      fireEvent.click(next());
+      fireEvent.click(next());
+      expect(within(group()).getByRole('img')).toHaveAttribute('src', '/c.png');
+    });
+
+    it('starts again on the first capture for another entry', () => {
+      const a = makeItem({ id: 'a', images });
+      const b = makeItem({ id: 'b', images });
+      const { rerender } = render(<EntryFirstPage key="a" item={a} compactCaptures />);
+      fireEvent.click(next());
+      rerender(<EntryFirstPage key="b" item={b} compactCaptures />);
+      expect(screen.getByText('Captura 1 de 3')).toBeInTheDocument();
+    });
   });
 });

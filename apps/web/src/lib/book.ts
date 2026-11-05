@@ -14,6 +14,9 @@ export interface BookPosition {
 /** Minimum width (px) of the book container to show two pages side by side. */
 export const BOOK_SPREAD_MIN_WIDTH = 720;
 
+/** Maximum width (px) of the book container for showing one capture at a time. */
+export const BOOK_COMPACT_MAX_WIDTH = 550;
+
 export const CAPTURE_SLOT_COUNT = 3;
 
 export const START_POSITION: BookPosition = { entryIndex: 0, side: 'first' };
@@ -74,6 +77,36 @@ export function positionLabel(position: BookPosition, layout: BookLayout, total:
   if (layout === 'spread') return entry;
   const page = t('book.pagePosition', { page: position.side === 'first' ? 1 : 2 });
   return t('book.positionWithPage', { entry, page });
+}
+
+export type CaptureDirection = 'previous' | 'next';
+
+/** True when the book is too narrow for three captures in a row. */
+export function isCompactWidth(width: number): boolean {
+  return width <= BOOK_COMPACT_MAX_WIDTH;
+}
+
+export function canStepCapture(index: number, direction: CaptureDirection): boolean {
+  return direction === 'next' ? index < CAPTURE_SLOT_COUNT - 1 : index > 0;
+}
+
+/** Moves to the neighbouring capture; stops at the first and last one instead of wrapping around. */
+export function stepCapture(index: number, direction: CaptureDirection): number {
+  const clamped = Math.min(Math.max(index, 0), CAPTURE_SLOT_COUNT - 1);
+  if (!canStepCapture(clamped, direction)) return clamped;
+  return direction === 'next' ? clamped + 1 : clamped - 1;
+}
+
+/** Text for screen readers when the entry on show changes: "Entrada 2 de 6: Hades", plus the page in `single`. */
+export function announcementLabel(
+  position: BookPosition,
+  layout: BookLayout,
+  total: number,
+  title: string,
+): string {
+  const n = position.entryIndex + 1;
+  if (layout === 'spread') return t('book.announceEntry', { n, total, title });
+  return t('book.announcePage', { n, total, title, page: position.side === 'first' ? 1 : 2 });
 }
 
 /** Always `CAPTURE_SLOT_COUNT` slots: the first images, padded with `undefined` for placeholders. */

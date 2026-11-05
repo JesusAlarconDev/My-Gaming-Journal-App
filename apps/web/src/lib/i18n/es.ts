@@ -54,10 +54,8 @@ export const es = {
   },
   book: {
     cover: {
-      title: 'Diario de {name}',
-      titleFallback: 'Mi diario',
+      title: 'My Gaming Journal',
       open: 'Abrir el diario',
-      hint: 'Pulsa para abrirlo',
     },
     label: 'Libro del diario',
     controlsLabel: 'Navegación del diario',
@@ -75,6 +73,9 @@ export const es = {
     secondPage: 'Segunda página de {title}',
     captures: 'Capturas',
     captureAlt: 'Captura {n} de {title}',
+    previousCapture: 'Captura anterior',
+    nextCapture: 'Captura siguiente',
+    captureIndicator: 'Captura {n} de {total}',
     liked: '¿Qué te gustó?',
     disliked: '¿Qué no te gustó?',
     emptyText: 'Todavía no has escrito nada aquí.',

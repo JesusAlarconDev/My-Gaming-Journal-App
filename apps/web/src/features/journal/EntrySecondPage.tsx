@@ -22,7 +22,16 @@ function TextSection({ title, text }: { title: string; text?: string }) {
  * Second page of an entry: what was liked and disliked, category ratings, suggested games and status.
  * Like the first page, it scrolls on its own when the content does not fit.
  */
-export function EntrySecondPage({ item, className }: { item: JournalItem; className?: string }) {
+export function EntrySecondPage({
+  item,
+  showTitle = false,
+  className,
+}: {
+  item: JournalItem;
+  /** Prints the game name as a running head, for when the first page is not on screen. */
+  showTitle?: boolean;
+  className?: string;
+}) {
   const t = useT();
   const { game, entry } = item;
   const suggestions = entry.suggestedGames ?? [];
@@ -38,6 +47,9 @@ export function EntrySecondPage({ item, className }: { item: JournalItem; classN
         className,
       )}
     >
+      {showTitle && (
+        <p className="font-display pr-12 text-sm break-words text-cocoa-soft">{game.title}</p>
+      )}
       <div>
         <StatusBadge status={entry.status} />
       </div>
