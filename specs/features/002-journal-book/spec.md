@@ -32,21 +32,28 @@ Convertir el Diario en el corazón visual de la aplicación: un **libro** que se
 | Capturas | 3 marcos Polaroid con imagen de relleno (placeholder) | La subida de imágenes está fuera de alcance |
 | "Juegos que podrían gustarte" | Se muestran 3 juegos genéricos de prueba en los datos mock; sin lógica de recomendación | El motor de recomendaciones es fase 4 |
 | Portada | Una sola portada de cuero base | La personalización de portadas se pospone a una feature futura |
+| Título de la portada | "My Gaming Journal", fijo y sin nombre de usuario | Petición del usuario tras la revisión visual G3 |
+| Abrir el libro | Pestaña en la esquina inferior derecha de la portada; la portada entera también es clicable | Petición del usuario tras G3; el botón centrado no encajaba con la estética |
+| Cerrar el libro | Botón con una X en la esquina superior derecha de las páginas | Petición del usuario tras G3 |
 | Añadir entradas | Fuera de esta feature: el botón o la forma de agregar se define en una spec posterior (ver sección 13) | 002 se limita al núcleo del diario; el alta implica formularios, búsqueda y persistencia |
 | Índice / salto directo | No hay índice; la navegación es anterior/siguiente | Basta para el núcleo del diario; un índice puede venir después |
+| Capturas en libro estrecho | Con el libro de **≤ 550 px de ancho** se muestra **una captura a la vez** con botones izquierda/derecha (RF-13) | Revisión visual de F2: con tres Polaroids en fila quedaban demasiado pequeñas |
+| Umbral del modo estrecho | Se mide el **ancho del libro** (contenedor), no el de la ventana | Coherente con el cambio entre una y dos páginas; con la barra lateral visible el libro puede ser más estrecho que la ventana |
+| Extremos del carrusel de capturas | Se detiene y deshabilita (`aria-disabled`), sin dar la vuelta | Igual que anterior/siguiente del libro (RF-8); el foco no se pierde |
+| Sin ninguna captura (modo estrecho) | Un solo marco vacío, sin botones ni indicador | Evita navegar entre marcos vacíos |
 
 ## 5. Requisitos funcionales
 
-**RF-1 Portada.** `/journal` muestra el libro **cerrado** con una portada de aspecto de cuero (textura, costuras, título en relieve). Siempre se carga cerrado. Hay una acción visible para abrirlo (botón y clic/toque sobre la portada).
+**RF-1 Portada.** `/journal` muestra el libro **cerrado** con una portada de aspecto de cuero (textura, costuras, título en relieve). Siempre se carga cerrado. La portada lleva el título **"My Gaming Journal"** y la acción visible para abrirlo es una **pestaña en la esquina inferior derecha** con el texto "Abrir el diario"; toda la portada es un único botón, así que el clic, el toque y el teclado sobre ella también lo abren.
 
-**RF-2 Apertura y cierre.** Al abrir, el libro muestra la primera doble página con una transición. Existe una acción para **cerrar** el libro y volver a la portada.
+**RF-2 Apertura y cierre.** Al abrir, el libro muestra la primera doble página con una transición. Existe una acción para **cerrar** el libro y volver a la portada: un botón con una **X en la esquina superior derecha** de las páginas, con nombre accesible "Cerrar el diario".
 
 **RF-3 Una entrada = una doble página.** Cada entrada del diario ocupa las dos páginas abiertas: página izquierda (primera) y página derecha (segunda).
 
 **RF-4 Primera página.** Contiene:
 - nombre del juego;
 - carátula del juego (placeholder generado si no hay imagen);
-- 3 imágenes tipo Polaroid para capturas (con placeholder si faltan);
+- 3 imágenes tipo Polaroid para capturas (con placeholder si faltan); en un libro estrecho se muestran de una en una (RF-13);
 - valoración de 5 estrellas (RF-6);
 - el texto descriptivo escrito por el usuario (ver Suposiciones).
 
@@ -75,6 +82,13 @@ Convertir el Diario en el corazón visual de la aplicación: un **libro** que se
 
 **RF-12 Datos.** Los datos de la entrada llegan a través de `services/` (hook + lógica en `lib/`). El mock incluye lo necesario (descripción, categorías, capturas vacías, 3 juegos sugeridos genéricos).
 
+**RF-13 Capturas en un libro estrecho.** Cuando el **ancho del libro es ≤ 550 px**, la primera página muestra **una sola captura a la vez**, con un marco que aprovecha el ancho de la página, en lugar de las tres en fila.
+- Dos botones, **izquierda** y **derecha**, recorren las 3 capturas; hay un indicador visible "Captura 2 de 3".
+- En la primera y en la última captura el botón correspondiente queda deshabilitado (`aria-disabled`); no se da la vuelta.
+- Siempre hay 3 posiciones (las que faltan son placeholders), como en RF-4. **Excepción:** si la entrada no tiene ninguna captura, se muestra un único marco vacío, sin botones ni indicador, **con el mismo tamaño que el marco entre las flechas** (no debe crecer hasta ocupar todo el ancho).
+- Al mostrarse la página empieza en la primera captura; si el libro cruza el umbral con la entrada abierta, se conserva la captura actual.
+- Por encima de 550 px se muestran las 3 capturas en fila (RF-4).
+
 ## 6. Requisitos no funcionales
 
 - **Arquitectura:** componentes del libro en `features/journal/`; sin acceso directo a datos mock; sin lógica de negocio en componentes visuales.
@@ -84,6 +98,7 @@ Convertir el Diario en el corazón visual de la aplicación: un **libro** que se
   - Contraste de texto ≥ 4.5:1 sobre el papel y sobre el cuero; contraste de las estrellas y controles ≥ 3:1.
   - Con `prefers-reduced-motion`, las transiciones de abrir/cerrar/pasar página se sustituyen por cambios instantáneos o un fundido.
   - El libro es usable con zoom de texto al 200 %.
+  - El carrusel de capturas (RF-13) se opera con teclado (botones nativos con foco visible y nombre accesible, objetivo táctil suficiente) y el cambio se anuncia (`aria-live="polite"`: "Captura 2 de 3").
 - **Rendimiento:** animaciones solo con `transform`/`opacity`; texturas en CSS/SVG ligero; sin imágenes pesadas.
 - **Responsive:** utilizable de 360 px a escritorio ancho, sin scroll horizontal de la página.
 - **Textos:** todos en `lib/i18n/es.ts`.
@@ -107,6 +122,7 @@ Convertir el Diario en el corazón visual de la aplicación: un **libro** que se
 13. Con `prefers-reduced-motion` no hay animaciones de movimiento.
 14. Ningún componente importa datos mock; los textos están en el diccionario i18n.
 15. `typecheck`, `lint`, `test` y `build` pasan, con tests para la lógica de navegación, las estrellas, y los estados vacío y límite.
+16. Con el libro de ≤ 550 px de ancho se ve **una sola captura a la vez**; los botones izquierda/derecha recorren las 3 capturas, se deshabilitan en los extremos, el indicador "Captura N de 3" es correcto y el cambio se anuncia; sin ninguna captura se ve un solo marco vacío sin botones; por encima de 550 px se ven las 3 en fila.
 
 ## 8. Casos límite
 
@@ -114,6 +130,7 @@ Convertir el Diario en el corazón visual de la aplicación: un **libro** que se
 - Entrada sin valoración (cinco estrellas grises, "Sin valoración").
 - Entrada con solo el estado y el juego (sin descripción, listas ni categorías).
 - Menos de 3 capturas (los marcos restantes quedan con placeholder); más de 3 (se muestran las 3 primeras).
+- Libro de ≤ 550 px: sin capturas (un marco vacío sin botones); con 1 o 2 (se recorren las 3 posiciones, las que faltan son placeholders); clics rápidos en izquierda/derecha; cruzar el umbral de 550 px con el libro abierto (se conserva la entrada y la captura actual).
 - Título de juego muy largo; descripción muy larga: el contenido de la página no desborda, hace scroll interno visible o se recorta de forma controlada.
 - "Qué te gustó" o "qué no te gustó" vacíos (la sección se muestra con un texto de ayuda o se omite sin dejar huecos) o con un texto muy largo.
 - Cambio de tamaño de ventana con el libro abierto, cruzando el punto de cambio entre una y dos páginas: se conserva la entrada actual.
@@ -127,10 +144,11 @@ Convertir el Diario en el corazón visual de la aplicación: un **libro** que se
 - Feature 001 implementada (shell, Design System, servicios mock, i18n).
 - Cambios en `packages/contracts` y en los datos mock: calificaciones por categoría, juegos sugeridos de prueba, y textos libres de "qué te gustó / qué no te gustó" en lugar de las listas actuales (ver Suposiciones). Actualizar `data-model.md` al aprobar; con ello queda resuelto su pendiente "texto libre o vocabulario controlado" (texto libre).
 - Nuevos tokens de color (cuero, dorado, gris de estrella) con contraste verificado.
+- Nuevos textos en `lib/i18n/es.ts` para el carrusel de capturas (botones, indicador, anuncio).
 
 ## 10. Fuera de alcance
 
-Añadir, crear, editar o eliminar entradas (incluido cualquier botón o acceso para hacerlo); seleccionar estrellas o cambiar cualquier dato; guardar cambios o persistencia; buscar juegos o añadir juegos; subida o gestión real de imágenes; recomendaciones reales y cualquier algoritmo; personalización o selección de estilos de portada; índice, búsqueda o filtros del diario; sonidos; impresión o exportación; backend y autenticación; selector de idioma.
+Añadir, crear, editar o eliminar entradas (incluido cualquier botón o acceso para hacerlo); seleccionar estrellas o cambiar cualquier dato; guardar cambios o persistencia; buscar juegos o añadir juegos; subida o gestión real de imágenes; recomendaciones reales y cualquier algoritmo; personalización o selección de estilos de portada; índice, búsqueda o filtros del diario; sonidos; gestos de deslizar o animación de transición entre capturas (el carrusel de capturas cambia al instante); impresión o exportación; backend y autenticación; selector de idioma.
 
 ## 11. Suposiciones (modificables)
 
@@ -142,11 +160,15 @@ Añadir, crear, editar o eliminar entradas (incluido cualquier botón o acceso p
 6. **`/journal` pasa a ser el libro:** sustituye a la lista de tarjetas. La tarjeta `JournalEntryCard` sigue usándose en el Inicio.
 7. **Cierre:** el libro puede cerrarse de nuevo; al cerrarse y reabrirse comienza en la primera entrada.
 8. **Móvil:** por debajo de `md`/`lg` (se fijará en el plan) se muestra una página a la vez.
-9. **Portada:** muestra el título del diario y el nombre del usuario (por ejemplo "Diario de Alex").
+9. **Portada:** muestra el título fijo "My Gaming Journal"; no incluye el nombre del usuario. *(Cambiada tras la revisión visual G3; antes era "Diario de {nombre}".)*
 
 ## 12. Preguntas abiertas
 
 Ninguna pendiente de clarificar. Las suposiciones 1–9 fueron confirmadas por el usuario, con la aclaración de la 1 y el ajuste de la 5 (textos libres, pueden estar vacíos).
+
+**Cambio posterior (revisión visual G3):** el usuario pidió el título "My Gaming Journal" en la portada, una pestaña en la esquina inferior derecha para abrir y una X en la esquina superior derecha de las páginas para cerrar (RF-1, RF-2, suposición 9 y Decisiones).
+
+**Cambio posterior (revisión visual F2):** el usuario pidió que en pantallas muy pequeñas (≈ 550 px) las capturas se vean de una en una con botones izquierda/derecha (RF-13). Umbral, extremos y caso sin capturas confirmados por el usuario (ver Decisiones).
 
 ## 13. Notas para una feature futura: añadir entradas
 

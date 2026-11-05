@@ -16,6 +16,8 @@ Construir de abajo arriba y de lo estático a lo animado, para poder verificar c
 8. Animaciones (abrir/cerrar y pasar página) **al final**, como capa visual añadida; sin ellas el libro ya es plenamente funcional.
 9. Integración en `/journal` y verificación.
 
+> **Cambio posterior (revisión visual F2, RF-13):** en libros de ≤ 550 px las capturas pasan de tres en fila a un carrusel de una captura a la vez. Se añade como tareas nuevas dentro de los bloques C, D, E y F (lógica y hook, pieza visual, integración en la primera página, paso del flag por `BookSpread`), sin alterar el orden del resto.
+
 No cambia ninguna interfaz de `services/`: `JournalService.listEntries()` y `useLibrary` ya entregan las entradas ordenadas de más reciente a más antigua.
 
 ## 2. Cambios por área
@@ -51,12 +53,13 @@ No cambia ninguna interfaz de `services/`: `JournalService.listEntries()` y `use
 - `BOOK_SPREAD_MIN_WIDTH = 720` (px): ancho mínimo **del contenedor del libro** para mostrar doble página.
 - `captureSlots(images)`: devuelve siempre 3 posiciones (imagen o `undefined`), ignorando las sobrantes.
 - `starOffsets`: constantes de desplazamiento y giro por estrella (arriba/abajo alternadas con pequeñas variaciones).
+- **RF-13 (capturas en libro estrecho):** `BOOK_COMPACT_MAX_WIDTH = 550` (px, ancho **del contenedor del libro**; ≤ 550 es modo estrecho), `isCompactWidth(width)`, y `stepCapture(index, direction)` / `canStepCapture(index, direction)` para moverse entre las 3 capturas (se detiene en los extremos, sin dar la vuelta). El caso "sin ninguna captura" (`images.length === 0`) lo decide el componente.
 
 Cambia el cálculo de `buildLibrary`/`computeStats` solo si los tests lo exigen; en principio no.
 
 ### 2.4 Hooks (`apps/web/src/hooks/`)
 
-- `useBookLayout()`: mide el ancho del contenedor con `ResizeObserver` y devuelve `[ref, layout]`.
+- `useBookLayout()`: mide el ancho del contenedor con `ResizeObserver` y devuelve `[ref, layout, compact]`; `compact` es `true` cuando el ancho es ≤ `BOOK_COMPACT_MAX_WIDTH` (RF-13). Añadir el tercer valor no rompe a quien solo use los dos primeros.
 - `usePrefersReducedMotion()`: `matchMedia('(prefers-reduced-motion: reduce)')` con `useSyncExternalStore`.
 
 ### 2.5 Componentes (`apps/web/src/features/journal/`)
@@ -64,15 +67,17 @@ Cambia el cálculo de `buildLibrary`/`computeStats` solo si los tests lo exigen;
 | Pieza | Responsabilidad |
 |---|---|
 | `JournalPage.tsx` | Ruta `/journal`: `PageHeader` (el `h1`), estados cargando/error, y `JournalBook` |
-| `JournalBook.tsx` | Estado abierto/cerrado y posición; controla foco, anuncios y animaciones; recibe `layout` opcional para forzarlo en tests |
-| `BookCover.tsx` | Portada de cuero como botón "Abrir el diario": título "Diario de {nombre}" |
-| `BookSpread.tsx` | Una o dos páginas según el layout |
-| `EntryFirstPage.tsx` | Nombre, carátula (`CoverPlaceholder`/imagen), 3 capturas, estrellas, texto |
+| `JournalBook.tsx` | Estado abierto/cerrado y posición; controla foco, anuncios y animaciones; obtiene `layout` y `compact` de `useBookLayout` y los recibe como props opcionales para forzarlos en tests |
+| `BookCover.tsx` | Portada de cuero como un único botón: título "My Gaming Journal" y, en la esquina inferior derecha, una pestaña con el texto "Abrir el diario". Ya no recibe el nombre del usuario |
+| `BookIconButton.tsx` | Botón redondo de icono con nombre accesible y `aria-disabled` (flechas de capturas, X de cierre y, en H1, anterior/siguiente), sin borde y con la sombra de papel |
+| `BookSpread.tsx` | Una o dos páginas según el layout; recibe `compactCaptures` y lo pasa a la primera página (con `key` por entrada para reiniciar la captura al cambiar de entrada) |
+| `EntryFirstPage.tsx` | Nombre, carátula (`CoverPlaceholder`/imagen), capturas, estrellas, texto. Recibe `compactCaptures`: `false` → 3 `CaptureFrame` en fila; `true` → `CaptureCarousel`. **Guarda el índice de la captura actual** (`useState`) para conservarlo al cruzar el umbral de 550 px |
 | `EntrySecondPage.tsx` | "¿Qué te gustó?", "¿Qué no te gustó?", calificaciones, sugeridos, estado (`StatusBadge`) |
 | `HandDrawnStars.tsx` | Estrellas en SVG, alternadas arriba/abajo, doradas rellenas / grises de contorno |
 | `CaptureFrame.tsx` | Marco Polaroid de captura (imagen con `alt` o placeholder) |
+| `CaptureCarousel.tsx` | RF-13: una sola captura (`CaptureFrame` grande) con botones izquierda/derecha, indicador "Captura N de 3" en una región `aria-live="polite"` y `aria-disabled` en los extremos. Componente controlado: recibe `index` y `onIndexChange`. Sin ninguna captura, un solo marco vacío sin botones |
 | `CategoryRatings.tsx` | Las cuatro categorías con mini-estrellas de lectura |
-| `BookControls.tsx` | Anterior, siguiente, indicador, cerrar |
+| `BookControls.tsx` | Anterior, siguiente e indicador. **El cierre no está aquí:** es una X en la esquina superior derecha de las páginas, dentro de `JournalBook` |
 | `PageTurnOverlay.tsx` | Capa visual `aria-hidden` con la animación de pasar página y de abrir/cerrar |
 | `book.css` | Perspectiva 3D, `@keyframes`, texturas de cuero y papel (CSS puro) |
 
@@ -85,7 +90,7 @@ Sin rutas nuevas: `/journal` pasa de lista a libro. La tabla de `app/routes.tsx`
 
 ### 2.7 Textos (`lib/i18n/es.ts`)
 
-Se retiran `journal.liked`, `journal.disliked`, `journal.loggedOn`, `journal.playtime`, `journal.noReview` solo si dejan de usarse (la tarjeta del Inicio los sigue usando; se conservan los que use). Se añade un grupo `book`: portada ("Diario de {name}", "Mi diario", "Abrir el diario"), controles ("Entrada anterior", "Entrada siguiente", "Página anterior/siguiente", "Cerrar el diario"), indicador ("Entrada {n} de {total}", "Página {p} de 2"), anuncio, secciones ("¿Qué te gustó?", "¿Qué no te gustó?", "Calificaciones", "Juegos que podrían gustarte"), categorías (Gameplay, Historia, Música, Gráficos), "Sin calificar", textos de ayuda para campos vacíos, capturas ("Captura {n} de {title}"), diario vacío.
+Se retiran `journal.liked`, `journal.disliked`, `journal.loggedOn`, `journal.playtime`, `journal.noReview` solo si dejan de usarse (la tarjeta del Inicio los sigue usando; se conservan los que use). Se añade un grupo `book`: portada ("My Gaming Journal", "Abrir el diario"), controles ("Entrada anterior", "Entrada siguiente", "Página anterior/siguiente", "Cerrar el diario"), indicador ("Entrada {n} de {total}", "Página {p} de 2"), anuncio, secciones ("¿Qué te gustó?", "¿Qué no te gustó?", "Calificaciones", "Juegos que podrían gustarte"), categorías (Gameplay, Historia, Música, Gráficos), "Sin calificar", textos de ayuda para campos vacíos, capturas ("Captura {n} de {title}"), diario vacío. RF-13: `book.previousCapture` ("Captura anterior"), `book.nextCapture` ("Captura siguiente") y `book.captureIndicator` ("Captura {n} de {total}"; sirve también como anuncio).
 
 ### 2.8 Tokens y estilos (`styles.css` + `book.css`)
 
@@ -114,8 +119,15 @@ Textura de cuero y de papel: gradientes CSS y un SVG ligero (`feTurbulence`) en 
 | Navegación en **`lib/book.ts` puro** | Testeable sin DOM; cumple "lógica fuera de los componentes" | Estado ad hoc dentro del componente |
 | Un paso en `single` = una **página**; en `spread` = una **entrada** | Coincide con RF-8/RF-10 | Mostrar siempre doble página reducida en móvil: ilegible |
 | Controles con **`aria-disabled`** en los extremos, no `disabled` | El foco no se pierde al llegar al final | `disabled`: el foco cae al `body` |
+| **Cierre con una X** en la esquina superior derecha de las páginas (`absolute`, dentro de un contenedor `relative` que envuelve a `BookSpread`); los títulos que pueden quedar debajo llevan margen derecho para no solaparse | Petición del usuario; es la convención de un diálogo y no ocupa espacio en la barra de controles | Botón "Cerrar" bajo el libro (primera versión, G2) |
+| La portada sigue siendo **un solo botón**; la pestaña "Abrir el diario" es un elemento visual dentro de él | Un único control para teclado y lectores; el clic en cualquier parte abre | Pestaña y portada como dos botones: abrir dos veces anunciado y orden de foco confuso |
 | El foco **no se mueve** al pasar de entrada (queda en el botón) y se anuncia con `role="status"`/`aria-live="polite"`; al **abrir**, el foco va al contenedor de la entrada; al **cerrar**, vuelve a la portada | Predecible para teclado y lectores | Mover el foco en cada paso: interrumpe la lectura repetida |
 | Flechas ← → como atajo dentro del libro | Cómodo con teclado; los botones siguen siendo el camino principal (suposición de la spec) | Solo botones |
+| **Carrusel de capturas en JS, no con container queries de CSS** | El estado (captura actual), el DOM distinto (una sola imagen accesible) y los anuncios necesitan lógica; con CSS habría imágenes duplicadas en el DOM | Mostrar/ocultar con `@container` y `hidden`: tres `img` en el árbol y comportamiento imposible de testear en happy-dom |
+| Umbral de **550 px sobre el ancho del libro** (constante `BOOK_COMPACT_MAX_WIDTH`) | Mismo criterio y mismo hook que el cambio una/dos páginas; decidido por el usuario | Media query de viewport: no refleja el espacio real con la barra lateral |
+| **Índice de la captura en `EntryFirstPage`**, no en el carrusel | Se conserva al cruzar el umbral (el carrusel se desmonta al pasar a tres en fila) | Estado dentro de `CaptureCarousel`: se perdería al redimensionar |
+| Botones de captura con **`aria-disabled`** y sin vuelta circular | Igual que el resto de controles del libro; el foco no se pierde; decidido por el usuario | `disabled` o carrusel circular |
+| Cambio de captura **instantáneo**, sin animación ni gestos de deslizar | Fuera de alcance de la spec; menos riesgo con movimiento reducido | Deslizamiento con `transform`: se puede añadir en una feature posterior |
 | Estrellas como **SVG propio** con desplazamientos fijos por posición | Aspecto manual reproducible y testeable; no depende del azar | Aleatorio por render: inestable; reutilizar `RatingStars` (lucide): no es "a mano" |
 | **Un `h1` visible** ("Diario") sobre el libro con `PageHeader`; el nombre del juego es `h2` y las secciones de la segunda página `h3` | Consistente con el resto de vistas y la regla de un solo `h1` | `h1` oculto o dentro de la portada |
 | Carátula de la entrada: `coverUrl` si existe, si no `CoverPlaceholder` | Reutiliza lo existente | Imagen nueva |
@@ -151,6 +163,7 @@ Textura de cuero y de papel: gradientes CSS y un SVG ligero (`feTurbulence`) en 
 | 13 Movimiento reducido | Test con `matchMedia` simulado: no se monta `PageTurnOverlay`; test con temporizadores simulados de que la capa se retira |
 | 14 Sin mocks directos / textos i18n | Búsquedas (`grep`) en la verificación final |
 | 15 `typecheck`, `lint`, `test`, `build`, `prettier` | Comandos |
+| 16 Capturas de una en una en libros de ≤ 550 px | Tests de `lib/book.ts` (`isCompactWidth`, `stepCapture`, extremos); test de `useBookLayout` (`compact` con `ResizeObserver` simulado en 550 y 551); tests de `CaptureCarousel` (una sola imagen, botones, indicador, `aria-disabled`, región `aria-live`, sin capturas = un marco y sin botones); tests de `EntryFirstPage` con `compactCaptures` verdadero y falso (1 vs 3 marcos, índice conservado al alternar) |
 | Contrastes de los tokens nuevos | Test que lee los tokens de `styles.css` y comprueba los umbrales de la tabla 2.8 |
 
 ### Manual (la hace el usuario)
@@ -161,6 +174,7 @@ Textura de cuero y de papel: gradientes CSS y un SVG ligero (`feTurbulence`) en 
 - Teclado completo y, si es posible, lector de pantalla.
 - "Reducir movimiento" activado en el sistema.
 - Zoom de texto al 200 %.
+- Capturas a 360 / 450 / 550 / 551 px: una a la vez y legibles hasta 550, tres en fila desde 551; los botones izquierda/derecha se pueden pulsar con el dedo y con teclado.
 
 ## 7. Riesgos
 
@@ -174,3 +188,4 @@ Textura de cuero y de papel: gradientes CSS y un SVG ligero (`feTurbulence`) en 
 | Migración de `likedAspects`/`dislikedAspects` rompe tests y la tarjeta del Inicio | Hacer la migración en el primer bloque, con `typecheck` y tests en verde antes de seguir |
 | Estética que dañe la legibilidad | Tokens con contraste verificado, texto siempre sobre `--color-page`, manuscrita solo en acentos |
 | Ancho de 720 px poco adecuado en algún equipo | Constante única `BOOK_SPREAD_MIN_WIDTH`, fácil de ajustar tras la revisión del usuario |
+| El umbral de 550 px puede no ser el ideal (de 551 a 719 px las tres capturas en fila siguen siendo pequeñas) | Constante única `BOOK_COMPACT_MAX_WIDTH`, fácil de subir tras la revisión del usuario |
