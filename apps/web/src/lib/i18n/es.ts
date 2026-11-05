@@ -44,8 +44,6 @@ export const es = {
   },
   journal: {
     description: 'Tus recuerdos, juego a juego',
-    emptyTitle: 'Tu diario está vacío',
-    emptyDescription: 'Cuando registres un juego, aparecerá aquí.',
     loggedOn: 'Registrado el {date}',
     playtime: '{time} jugadas',
     noReview: 'Sin reseña todavía',

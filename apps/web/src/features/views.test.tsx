@@ -1,4 +1,10 @@
-import { render, screen, waitForElementToBeRemoved, within } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitForElementToBeRemoved,
+  within,
+} from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { CollectionPage } from './collection/CollectionPage';
 import { DashboardPage } from './dashboard/DashboardPage';
@@ -63,26 +69,58 @@ describe('Dashboard', () => {
 });
 
 describe('Journal', () => {
-  it('lists all entries newest first, handling missing rating, review and long text', async () => {
+  const cover = () => screen.findByRole('button', { name: /Abrir el diario/ });
+
+  it('shows the closed book with its cover, a single h1 and no entries yet', async () => {
     renderView(<JournalPage />);
-    const items = await screen.findAllByRole('article');
-    expect(items).toHaveLength(6);
-    expect(within(items[0]!).getByRole('heading', { level: 2 })).toHaveTextContent(
-      'Stardew Valley',
-    );
-    // Hollow Knight: no rating. Disco Elysium: no review.
-    const hollow = items.find((i) => within(i).queryByText('Hollow Knight'))!;
-    expect(within(hollow).getByRole('img', { name: 'Sin valoración' })).toBeInTheDocument();
-    const disco = items.find((i) => within(i).queryByText('Disco Elysium'))!;
-    expect(within(disco).getByText('Sin reseña todavía')).toBeInTheDocument();
-    // Long review remains fully in the DOM; truncation is visual.
-    expect(screen.getByText(/volver a explorar todo desde cero/)).toBeInTheDocument();
+    expect(await cover()).toHaveAccessibleName('My Gaming Journal Abrir el diario');
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Diario');
+    expect(screen.queryByRole('article')).not.toBeInTheDocument();
+    expect(screen.queryByRole('region')).not.toBeInTheDocument();
   });
 
-  it('shows an empty state when the journal is empty', async () => {
+  it('opens on the most recent entry, with its pages from the service', async () => {
+    renderView(<JournalPage />);
+    fireEvent.click(await cover());
+    expect(screen.getByRole('heading', { level: 2, name: 'Stardew Valley' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Primera página de Stardew Valley' })).toBeVisible();
+    expect(screen.getByText('Entrada 1 de 6 · Página 1 de 2')).toBeInTheDocument();
+  });
+
+  it('turns through the pages of the journal and reaches the oldest entry', async () => {
+    renderView(<JournalPage />);
+    fireEvent.click(await cover());
+    const next = () => screen.getByRole('button', { name: 'Página siguiente' });
+    // Six entries, two pages each; a narrow book in tests shows one page at a time.
+    for (let i = 0; i < 11; i++) fireEvent.click(next());
+    expect(screen.getByRole('region', { name: 'Segunda página de Disco Elysium' })).toBeVisible();
+    expect(next()).toHaveAttribute('aria-disabled', 'true');
+  });
+
+  it('handles an entry without rating, review, texts, categories or suggestions', async () => {
+    renderView(<JournalPage />);
+    fireEvent.click(await cover());
+    const next = () => screen.getByRole('button', { name: 'Página siguiente' });
+    for (let i = 0; i < 10; i++) fireEvent.click(next());
+    // Disco Elysium: status only.
+    expect(screen.getByRole('img', { name: 'Sin valoración' })).toBeInTheDocument();
+    expect(screen.getByText('Sin reseña todavía')).toBeInTheDocument();
+    fireEvent.click(next());
+    expect(screen.getByText('Pendiente')).toBeInTheDocument();
+    expect(screen.getAllByText('Sin calificar')).toHaveLength(4);
+    expect(screen.queryByText('Juegos que podrían gustarte')).not.toBeInTheDocument();
+  });
+
+  it('shows an empty book with a message when the journal is empty', async () => {
     vi.spyOn(services.journal, 'listEntries').mockResolvedValueOnce([]);
     renderView(<JournalPage />);
-    expect(await screen.findByText('Tu diario está vacío')).toBeInTheDocument();
+    fireEvent.click(await cover());
+    expect(screen.getByText('Tu diario está vacío')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Página siguiente' })).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
   });
 });
 

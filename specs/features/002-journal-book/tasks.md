@@ -69,7 +69,7 @@ Los bloques siguen el orden del plan: datos → tokens y textos → lógica → 
 - [x] I5. Revisión de fluidez en escritorio y en un móvil real. *Verif.: manual (usuario).*
 
 ## Bloque J — Integración
-- [ ] J1. `JournalPage`: `PageHeader` (único `h1`), título del documento y `JournalBook` en `/journal`, sustituyendo la lista; actualizar `views.test.tsx` (Diario) y retirar los textos i18n sin uso. *Verif.: tests de vista (cargando, error, vacío, con datos) y `routes.test.tsx`.*
+- [x] J1. `JournalPage`: `PageHeader` (único `h1`), título del documento y `JournalBook` en `/journal`, sustituyendo la lista; actualizar `views.test.tsx` (Diario) y retirar los textos i18n sin uso. *Verif.: tests de vista (cargando, error, vacío, con datos) y `routes.test.tsx`.*
 
 ## Bloque K — Verificación final
 - [ ] K1. `typecheck`, `lint`, `test`, `build` y `prettier --check` pasan.
