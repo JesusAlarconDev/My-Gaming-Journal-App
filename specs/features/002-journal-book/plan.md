@@ -1,6 +1,6 @@
 # 002 — Journal Book · Plan
 
-- **Estado:** Aprobado
+- **Estado:** Implementado
 
 ## 1. Enfoque
 
@@ -73,7 +73,7 @@ Cambia el cálculo de `buildLibrary`/`computeStats` solo si los tests lo exigen;
 | `BookSpread.tsx` | Una o dos páginas según el layout; recibe `compactCaptures` y lo pasa a la primera página (con `key` por entrada para reiniciar la captura al cambiar de entrada) |
 | `EntryFirstPage.tsx` | Nombre, carátula (`CoverPlaceholder`/imagen), capturas, estrellas, texto. Recibe `compactCaptures`: `false` → 3 `CaptureFrame` en fila; `true` → `CaptureCarousel`. **Guarda el índice de la captura actual** (`useState`) para conservarlo al cruzar el umbral de 550 px |
 | `EntrySecondPage.tsx` | "¿Qué te gustó?", "¿Qué no te gustó?", calificaciones, sugeridos, estado (`StatusBadge`) |
-| `HandDrawnStars.tsx` | Estrellas en SVG, alternadas arriba/abajo, doradas rellenas / grises de contorno |
+| `HandDrawnStars.tsx` | Estrellas en SVG, alternadas arriba/abajo, tipo sticker: relleno sólido; las doradas con borde blanco grueso (`paint-order: stroke`), las grises en `star-off` también en el borde; sombra suave; más del doble de tamaño (`h-24`) |
 | `CaptureFrame.tsx` | Marco Polaroid de captura (imagen con `alt` o placeholder) |
 | `CaptureCarousel.tsx` | RF-13: una sola captura (`CaptureFrame` grande) con botones izquierda/derecha, indicador "Captura N de 3" en una región `aria-live="polite"` y `aria-disabled` en los extremos. Componente controlado: recibe `index` y `onIndexChange`. Sin ninguna captura, un solo marco vacío sin botones |
 | `CategoryRatings.tsx` | Las cuatro categorías con mini-estrellas de lectura |
@@ -103,8 +103,9 @@ Nuevos tokens en `@theme`, con contraste ya calculado:
 | `--color-leather-dark` | `#3b2316` | Sombras y bordes de la portada | emboss 9.92:1 |
 | `--color-emboss` | `#ecd29c` | Título en relieve y costuras | sobre cuero 7.04:1 |
 | `--color-gold` | `#e2a62a` | Relleno de estrella valorada | — |
-| `--color-gold-deep` | `#85590a` | Contorno de estrella dorada | 5.63:1 sobre página |
-| `--color-star-gray` | `#857f77` | Contorno de estrella sin valorar | 3.64:1 sobre página |
+| `--color-gold-deep` | `#85590a` | Mini-estrellas de lectura (`CategoryRatings`) | 5.63:1 sobre página |
+| `--color-star-gray` | `#857f77` | Mini-estrellas de lectura sin valorar (`CategoryRatings`) | 3.64:1 sobre página |
+| `--color-star-off` | `#c9c3ba` | Relleno y borde de la estrella sin valorar (sticker) | 1.6:1 sobre página: **excepción** a ≥ 3:1, decidida por el usuario; el estado se anuncia siempre como texto |
 
 Textura de cuero y de papel: gradientes CSS y un SVG ligero (`feTurbulence`) en `data:` URI usado como `background-image` (se rasteriza una vez). Sin imágenes externas.
 
@@ -121,6 +122,8 @@ Textura de cuero y de papel: gradientes CSS y un SVG ligero (`feTurbulence`) en 
 | Controles con **`aria-disabled`** en los extremos, no `disabled` | El foco no se pierde al llegar al final | `disabled`: el foco cae al `body` |
 | **Cierre con una X** en la esquina superior derecha de las páginas (`absolute`, dentro de un contenedor `relative` que envuelve a `BookSpread`); los títulos que pueden quedar debajo llevan margen derecho para no solaparse | Petición del usuario; es la convención de un diálogo y no ocupa espacio en la barra de controles | Botón "Cerrar" bajo el libro (primera versión, G2) |
 | La portada sigue siendo **un solo botón**; la pestaña "Abrir el diario" es un elemento visual dentro de él | Un único control para teclado y lectores; el clic en cualquier parte abre | Pestaña y portada como dos botones: abrir dos veces anunciado y orden de foco confuso |
+| **Ancho máximo del libro** (`max-w-5xl`, centrado) | En pantallas muy anchas las páginas crecían hasta ser incómodas de leer (detectado en la revisión del cierre); el umbral de 720 px se sigue midiendo sobre ese contenedor | Libro a todo el ancho disponible |
+| **Abrir como una tapa dura**: en doble página la portada cerrada mide una página y la misma portada gira 180° sobre el lomo mostrando su cara interior (papel con borde de cuero), mientras el libro se desliza al centro; **cerrar reproduce la animación a la inversa** y el libro real se desmonta al terminar | Una lámina de cuero plana y del ancho del libro entero (primeras versiones) se veía como un rectángulo marrón y no como un libro abriéndose; la continuidad con la portada cerrada exige que tengan el mismo tamaño | Cubierta de ancho completo que gira y se desvanece; portada que reaparece con un fundido al cerrar |
 | El foco **no se mueve** al pasar de entrada (queda en el botón) y se anuncia con `role="status"`/`aria-live="polite"`; al **abrir**, el foco va al contenedor de la entrada; al **cerrar**, vuelve a la portada | Predecible para teclado y lectores | Mover el foco en cada paso: interrumpe la lectura repetida |
 | Flechas ← → como atajo dentro del libro | Cómodo con teclado; los botones siguen siendo el camino principal (suposición de la spec) | Solo botones |
 | **Carrusel de capturas en JS, no con container queries de CSS** | El estado (captura actual), el DOM distinto (una sola imagen accesible) y los anuncios necesitan lógica; con CSS habría imágenes duplicadas en el DOM | Mostrar/ocultar con `@container` y `hidden`: tres `img` en el árbol y comportamiento imposible de testear en happy-dom |

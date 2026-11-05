@@ -1,6 +1,6 @@
 # 002 — Journal Book (el diario como libro) · Spec
 
-- **Estado:** Aprobada
+- **Estado:** Implementada
 - **Fase:** 2 — Core Journal Experience
 
 ## 1. Objetivo
@@ -65,9 +65,9 @@ Convertir el Diario en el corazón visual de la aplicación: un **libro** que se
 - **estado** del juego (`playing`, `completed`, `backlog`, `abandoned`, `on_hold`).
 
 **RF-6 Estrellas dibujadas a mano.**
-- Cinco estrellas en **gris** (sin valorar) y **doradas** (valoradas), según la valoración 1–5 de la entrada.
+- Cinco estrellas **grises** (sin valorar) y **doradas** (valoradas), según la valoración 1–5 de la entrada. Todas son de **relleno sólido**, como pegatinas (stickers) pegadas en la página, y se ven **más del doble de grandes** que en la primera versión. Las **doradas** llevan un **borde blanco** grueso; las **grises** son de un gris **claro y plano, borde incluido** (sin borde blanco).
 - Disposición **no lineal**: la 1.ª más arriba, la 2.ª más abajo, la 3.ª más arriba, la 4.ª más abajo, y así, con un aspecto de trazo manual (ligeras variaciones de posición/inclinación).
-- El estado (valorada o no) no se comunica solo con el color: la estrella dorada va rellena y la gris es solo contorno.
+- El estado (valorada o no) se distingue por el color (dorado con borde blanco frente a gris claro plano) y **siempre se anuncia como texto**; ya no se distingue por relleno frente a contorno (cambio pedido por el usuario tras la revisión visual).
 - Se anuncia a tecnologías de apoyo como texto ("4 de 5 estrellas" / "Sin valoración").
 
 **RF-7 Calificaciones por categoría.** Gameplay, historia, música y gráficos se muestran con una escala de 1–5 (opcional por categoría); si una no existe, se muestra como "sin calificar".
@@ -112,7 +112,7 @@ Convertir el Diario en el corazón visual de la aplicación: un **libro** que se
 3. Tras abrirlo se ve la entrada más reciente como doble página (o una página a la vez en pantallas pequeñas).
 4. La primera página muestra nombre, carátula, 3 marcos Polaroid, estrellas y texto descriptivo.
 5. La segunda página muestra "¿Qué te gustó?", "¿Qué no te gustó?", las 4 calificaciones, 3 juegos sugeridos de prueba y el estado.
-6. Las estrellas reflejan la valoración (doradas rellenas / grises de contorno), están alternadas arriba y abajo, y su texto accesible coincide con la valoración.
+6. Las estrellas reflejan la valoración (doradas con borde blanco / grises claras planas, todas de relleno sólido tipo sticker), están alternadas arriba y abajo, y su texto accesible coincide con la valoración.
 7. Anterior/siguiente recorren todas las entradas de la más reciente a la más antigua; se deshabilitan en los extremos; el indicador de posición es correcto.
 8. Una entrada sin valoración, sin descripción, sin textos de "qué te gustó / qué no te gustó", sin categorías, sin capturas o sin sugerencias se muestra sin errores ni huecos rotos.
 9. Un diario sin entradas muestra el libro con un mensaje de vacío, sin controles de navegación activos.

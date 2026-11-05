@@ -1,6 +1,6 @@
 # 002 — Journal Book · Tasks
 
-- **Estado:** Aprobadas
+- **Estado:** Implementadas
 
 Leyenda: `[ ]` pendiente · `[x]` completada **y verificada**. Las tareas con verificación *manual* las confirma el usuario. No empezar sin aprobación de spec, plan y tareas.
 
@@ -36,6 +36,7 @@ Los bloques siguen el orden del plan: datos → tokens y textos → lógica → 
 - [x] D3. Componente `CategoryRatings` (gameplay, historia, música, gráficos con mini-estrellas o "Sin calificar"). *Verif.: tests con categorías completas, parciales y ausentes.*
 - [x] D4. `book.css` base: papel de la página, sombras y lomo del libro (sin animación). *Verif.: `build`; el aspecto se revisa en F2.*
 - [x] D5. *(RF-13)* Componente `CaptureCarousel` (controlado: `index` y `onIndexChange`): una sola captura en un `CaptureFrame` grande, botones izquierda/derecha con nombre accesible y `aria-disabled` en los extremos, indicador "Captura N de 3" en región `aria-live="polite"`; sin ninguna captura, un único marco vacío sin botones ni indicador. Añadir las claves `book.previousCapture`, `book.nextCapture` y `book.captureIndicator` en `lib/i18n/es.ts`. *Verif.: tests (una sola imagen visible, botones, extremos, indicador y anuncio, clics repetidos, sin capturas, con 1 y 2 imágenes) + revisión visual en F2.*
+- [x] D6. *(cambio tras la revisión de K)* `HandDrawnStars` tipo sticker: relleno sólido dorado con borde blanco grueso / gris claro plano (`star-off`, borde incluido), sombra suave y tamaño más del doble; nuevo token `star-off` y ajuste de los tests (`HandDrawnStars`, `styles.test.ts`). Las mini-estrellas de `CategoryRatings` no cambian. *Verif.: tests de `HandDrawnStars`, `typecheck`, `lint`, `build` + revisión visual (usuario).*
 
 ## Bloque E — Páginas
 - [x] E1. `EntryFirstPage`: nombre del juego, carátula (imagen o `CoverPlaceholder`), 3 capturas, estrellas y texto (`review`), con scroll interno accesible si el texto no cabe. *Verif.: tests con entrada completa, mínima, título largo, reseña larga y sin reseña.*
@@ -72,12 +73,12 @@ Los bloques siguen el orden del plan: datos → tokens y textos → lógica → 
 - [x] J1. `JournalPage`: `PageHeader` (único `h1`), título del documento y `JournalBook` en `/journal`, sustituyendo la lista; actualizar `views.test.tsx` (Diario) y retirar los textos i18n sin uso. *Verif.: tests de vista (cargando, error, vacío, con datos) y `routes.test.tsx`.*
 
 ## Bloque K — Verificación final
-- [ ] K1. `typecheck`, `lint`, `test`, `build` y `prettier --check` pasan.
-- [ ] K2. Tabla criterio → evidencia de los 16 criterios de aceptación de la spec.
-- [ ] K3. Checklist de accesibilidad: teclado completo, foco visible, anuncios, un único `h1`, contraste de tokens, movimiento reducido, zoom al 200 %. *Verif.: manual (usuario) para teclado, zoom y movimiento reducido.*
-- [ ] K4. Revisión responsive (360 / 550 / 551 / 768 / 1280) sin scroll horizontal, con una captura a la vez hasta 550 px y tres en fila desde 551 y cambio de una a dos páginas al redimensionar conservando la entrada. *Verif.: manual (usuario).*
-- [ ] K5. Búsquedas: ningún componente importa datos mock, sin textos de UI fijos fuera de `lib/i18n/es.ts`, sin dependencias nuevas ni código de fases futuras.
-- [ ] K6. Documentos: estado de spec, plan y tareas a *Implementada/o/as*, `data-model.md` coherente y anotar la revisión pendiente de `CLAUDE.md`.
+- [x] K1. `typecheck`, `lint`, `test`, `build` y `prettier --check` pasan.
+- [x] K2. Tabla criterio → evidencia de los 16 criterios de aceptación de la spec.
+- [x] K3. Checklist de accesibilidad: teclado completo, foco visible, anuncios, un único `h1`, contraste de tokens, movimiento reducido, zoom al 200 %. *Verif.: manual (usuario) para teclado, zoom y movimiento reducido.*
+- [x] K4. Revisión responsive (360 / 550 / 551 / 768 / 1280) sin scroll horizontal, con una captura a la vez hasta 550 px y tres en fila desde 551 y cambio de una a dos páginas al redimensionar conservando la entrada. *Verif.: manual (usuario).*
+- [x] K5. Búsquedas: ningún componente importa datos mock, sin textos de UI fijos fuera de `lib/i18n/es.ts`, sin dependencias nuevas ni código de fases futuras.
+- [x] K6. Documentos: estado de spec, plan y tareas a *Implementada/o/as*, `data-model.md` coherente y `CLAUDE.md` actualizado.
 
 ## Cobertura de los criterios de aceptación
 
@@ -88,7 +89,7 @@ Los bloques siguen el orden del plan: datos → tokens y textos → lógica → 
 | 3 Más reciente primero | H2 |
 | 4 Primera página | E1 |
 | 5 Segunda página | E2 |
-| 6 Estrellas | D1 |
+| 6 Estrellas | D1, D6 |
 | 7 Navegación y extremos | C1, H1, H2 |
 | 8 Datos incompletos | D2, D3, E1, E2 |
 | 9 Diario vacío | H4 |
