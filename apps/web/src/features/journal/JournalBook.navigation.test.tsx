@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { buildLibrary } from '@/lib/library';
-import { createMockServices } from '@/services/mock';
+import { services } from '@/services';
 import { JournalBook } from './JournalBook';
 import { COMPLETE_ENTRY, makeItem } from './testItems';
 
@@ -20,7 +20,6 @@ const liveRegion = () => document.querySelector('[aria-live="polite"]')!;
 const entryTitle = () => screen.getByRole('heading', { level: 2 }).textContent;
 
 async function mockItems() {
-  const services = createMockServices();
   const [games, entries] = await Promise.all([
     services.games.listGames(),
     services.journal.listEntries(),

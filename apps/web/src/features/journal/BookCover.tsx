@@ -1,12 +1,28 @@
 import type { Ref } from 'react';
 import { ChevronRight } from 'lucide-react';
+import type { BookLayout } from '@/lib/book';
 import { cx } from '@/lib/cx';
 import { useT } from '@/lib/i18n';
 
+/** What is printed on the cover: stitching, title and the open tab. Shared with the opening animation. */
+export function BookCoverFace() {
+  const t = useT();
+  return (
+    <>
+      <span aria-hidden="true" className="book-cover__stitch" />
+      <span className="book-cover__title">{t('book.cover.title')}</span>
+      <span className="book-cover__tab">
+        {t('book.cover.open')}
+        <ChevronRight aria-hidden="true" size={16} strokeWidth={2.5} />
+      </span>
+    </>
+  );
+}
+
 interface BookCoverProps {
   onOpen: () => void;
-  /** Plays the cover-closing animation when it appears (the book was just closed). */
-  arriving?: boolean;
+  /** In a spread the cover is one page wide, so opening it looks like swinging a real cover. */
+  layout?: BookLayout;
   /** Lets the book return focus to the cover after closing. */
   ref?: Ref<HTMLButtonElement>;
   className?: string;
@@ -17,9 +33,7 @@ interface BookCoverProps {
  * The tab in the bottom-right corner is part of that button, not a second control, so its text
  * is read together with the title.
  */
-export function BookCover({ onOpen, arriving = false, ref, className }: BookCoverProps) {
-  const t = useT();
-
+export function BookCover({ onOpen, layout = 'single', ref, className }: BookCoverProps) {
   return (
     <button
       ref={ref}
@@ -27,16 +41,11 @@ export function BookCover({ onOpen, arriving = false, ref, className }: BookCove
       onClick={onOpen}
       className={cx(
         'book-cover transition-transform duration-200 motion-safe:hover:-translate-y-1',
-        arriving && 'book-cover--arriving',
+        layout === 'spread' && 'book-cover--spread',
         className,
       )}
     >
-      <span aria-hidden="true" className="book-cover__stitch" />
-      <span className="book-cover__title">{t('book.cover.title')}</span>
-      <span className="book-cover__tab">
-        {t('book.cover.open')}
-        <ChevronRight aria-hidden="true" size={16} strokeWidth={2.5} />
-      </span>
+      <BookCoverFace />
     </button>
   );
 }

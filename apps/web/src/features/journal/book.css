@@ -70,9 +70,8 @@
     );
   }
 
-  /* Leather look shared by the closed cover and the cover that swings open over the book. */
-  .book-cover,
-  .book-turn__leather {
+  /* Leather look of the cover; the opening animation reuses the same element for its front face. */
+  .book-cover {
     background-color: var(--color-leather);
     background-image:
       var(--book-paper-grain),
@@ -152,6 +151,16 @@
       inset 0 -2px 0 rgb(59 35 22 / 0.2);
   }
 
+  /*
+   * In a spread the closed cover is one page wide and as tall as the open book, so that opening it
+   * (see `.book-open__*`) swings that same cover over the spine like a hardcover.
+   */
+  .book-cover--spread {
+    width: 50%;
+    height: clamp(28rem, 80dvh, 42rem);
+    aspect-ratio: auto;
+  }
+
   /* The global orange focus ring is too dim on leather; draw an emboss one inside the cover. */
   .book-cover:focus-visible {
     outline: 3px solid var(--color-emboss);
@@ -173,8 +182,7 @@
   }
 
   .book-turn__leaf,
-  .book-turn__backing,
-  .book-turn__leather {
+  .book-turn__backing {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -225,22 +233,6 @@
     right: 0;
   }
 
-  .book-turn--cover .book-turn__leather {
-    left: 0;
-    width: 100%;
-    border-radius: 0.375rem 0.75rem 0.75rem 0.375rem;
-    box-shadow: inset 0 0 0 2px var(--color-leather-dark);
-    transform-origin: left center;
-    will-change: transform, opacity;
-    animation: book-cover-open 700ms ease-in-out both;
-  }
-
-  /* The cover coming back when the book closes. */
-  .book-cover--arriving {
-    transform-origin: left center;
-    animation: book-cover-close 500ms ease-out both;
-  }
-
   @keyframes book-turn-next {
     from {
       transform: rotateY(0deg);
@@ -259,27 +251,187 @@
     }
   }
 
-  @keyframes book-cover-open {
+  /*
+   * Opening the book (and, played backwards, closing it). The closed cover is the front cover of a
+   * hardcover: it swings 180 degrees over the spine, showing its inside (paper with a leather rim)
+   * and uncovering a blank page, while the whole book slides to the middle. The real book waits
+   * underneath: its right page appears as soon as the cover has passed the vertical (so no blank
+   * page lingers), the left side stays under the inside of the cover, and the whole layer fades
+   * out at the end to reveal the left page. `data-direction="close"` plays everything in reverse.
+   */
+  .book-turn--cover {
+    perspective: none;
+    animation: book-open-overlay 800ms linear both;
+  }
+
+  .book-open__assembly {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 50%;
+    perspective: 2600px;
+    will-change: transform;
+    animation: book-open-slide 800ms ease-in-out both;
+  }
+
+  .book-open__stage {
+    position: absolute;
+    inset: 0;
+    border-radius: 0 0.5rem 0.5rem 0;
+    background-color: var(--color-page);
+    background-image: var(--book-paper-grain);
+    box-shadow:
+      inset 22px 0 26px -20px rgb(62 44 35 / 0.32),
+      0 2px 4px rgb(59 35 22 / 0.25);
+    animation: book-open-stage 800ms linear both;
+  }
+
+  .book-open__leaf {
+    position: absolute;
+    inset: 0;
+    transform-origin: left center;
+    transform-style: preserve-3d;
+    will-change: transform;
+    animation: book-open-swing 800ms ease-in-out both;
+  }
+
+  .book-open__front,
+  .book-open__back {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+  }
+
+  /* The outside of the cover: the very same look as the closed one. */
+  .book-open__front.book-cover {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    aspect-ratio: auto;
+    cursor: default;
+  }
+
+  /* The inside of the cover: paper pasted on leather, so only a thin rim of leather shows. */
+  .book-open__back,
+  .book-open__mask {
+    border-radius: 0.5rem 0 0 0.5rem;
+    background-color: var(--color-page);
+    background-image: var(--book-paper-grain);
+    box-shadow:
+      inset 0 0 0 0.3rem var(--color-leather),
+      inset 0 0 0 calc(0.3rem + 2px) var(--color-leather-dark);
+  }
+
+  .book-open__back {
+    transform: rotateY(180deg);
+  }
+
+  /*
+   * The same inside of the cover, lying on the left half under the swinging cover. It hides the
+   * real left page until the layer fades out, and shows up as the cover passes the vertical.
+   */
+  .book-open__mask {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 50%;
+    animation: book-open-mask 800ms linear both;
+  }
+
+  /* One page wide: the cover covers the page and swings off to the left. */
+  .book-turn--cover[data-layout='single'] .book-open__assembly {
+    left: 0;
+    width: 100%;
+    animation: none;
+  }
+
+  .book-turn--cover[data-layout='single'] .book-open__mask {
+    display: none;
+  }
+
+  .book-turn--cover[data-layout='single'] .book-open__stage {
+    border-radius: 0.25rem 0.5rem 0.5rem 0.25rem;
+  }
+
+  .book-turn--cover[data-direction='close'],
+  .book-turn--cover[data-direction='close'] .book-open__assembly,
+  .book-turn--cover[data-direction='close'] .book-open__stage,
+  .book-turn--cover[data-direction='close'] .book-open__mask,
+  .book-turn--cover[data-direction='close'] .book-open__leaf {
+    animation-direction: reverse;
+  }
+
+  /* The real book underneath: hidden while the cover opens, hidden again as it closes. */
+  .book-revealing {
+    animation: book-open-reveal 800ms linear both;
+  }
+
+  .book-hiding {
+    animation: book-open-reveal 800ms linear both reverse;
+  }
+
+  /* The book reaches its place by the time the cover is edge-on, then stays still. */
+  @keyframes book-open-slide {
     from {
-      transform: rotateY(0deg);
-      opacity: 1;
+      transform: translateX(-50%);
     }
-    70% {
-      opacity: 1;
-    }
+    45%,
     to {
-      transform: rotateY(-110deg);
+      transform: translateX(0);
+    }
+  }
+
+  /* Blank page under the cover until the real right page takes over (45% to 55%). */
+  @keyframes book-open-stage {
+    0%,
+    45% {
+      opacity: 1;
+    }
+    55%,
+    100% {
       opacity: 0;
     }
   }
 
-  @keyframes book-cover-close {
-    from {
-      transform: perspective(1400px) rotateY(-100deg);
+  @keyframes book-open-mask {
+    0%,
+    42% {
       opacity: 0;
     }
+    55%,
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes book-open-swing {
+    from {
+      transform: rotateY(0deg);
+    }
     to {
-      transform: perspective(1400px) rotateY(0deg);
+      transform: rotateY(-180deg);
+    }
+  }
+
+  @keyframes book-open-overlay {
+    0%,
+    82% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes book-open-reveal {
+    0%,
+    45% {
+      opacity: 0;
+    }
+    55%,
+    100% {
       opacity: 1;
     }
   }

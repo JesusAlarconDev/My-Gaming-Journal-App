@@ -15,16 +15,24 @@ const next = () => screen.getByRole('button', { name: /siguiente$/ });
 const previous = () => screen.getByRole('button', { name: /anterior$/ });
 const close = () => screen.getByRole('button', { name: 'Cerrar el diario' });
 const entryTitle = () => screen.getByRole('heading', { level: 2 }).textContent;
-const turnLayer = (container: HTMLElement) => container.querySelector('.book-turn[data-direction]');
+const turnLayer = (container: HTMLElement) =>
+  container.querySelector('.book-turn:not(.book-turn--cover)');
 const coverLayer = (container: HTMLElement) => container.querySelector('.book-turn--cover');
+const endCoverLayer = (container: HTMLElement) => fireEvent.animationEnd(coverLayer(container)!);
+const entryGroup = () => screen.getByRole('group', { name: /Entrada \d de 3/ });
 const endTurn = (container: HTMLElement) =>
   fireEvent.animationEnd(container.querySelector('.book-turn__leaf')!);
 
 /** Opens the book and finishes the opening animation, so tests start from a settled book. */
 function openAndSettle(container: HTMLElement) {
   fireEvent.click(cover());
-  const leather = container.querySelector('.book-turn__leather');
-  if (leather) fireEvent.animationEnd(leather);
+  if (coverLayer(container)) endCoverLayer(container);
+}
+
+/** Closes the book and finishes the closing animation, so the cover is back. */
+function closeAndSettle(container: HTMLElement) {
+  fireEvent.click(close());
+  if (coverLayer(container)) endCoverLayer(container);
 }
 
 afterEach(() => {
@@ -145,7 +153,9 @@ describe('page turn animation', () => {
     fireEvent.click(next());
     fireEvent.click(close());
     expect(turnLayer(container)).not.toBeInTheDocument();
+    endCoverLayer(container);
     fireEvent.click(cover());
+    endCoverLayer(container);
     fireEvent.click(next());
     expect(turnLayer(container)).toBeInTheDocument();
   });
@@ -154,22 +164,34 @@ describe('page turn animation', () => {
 describe('open and close animation', () => {
   beforeEach(allowMotion);
 
-  it('swings a leather cover away over the book that is already open underneath', () => {
+  it('swings the cover open over the book, which is already open and hidden underneath', () => {
     const { container } = render(<JournalBook items={items} layout="spread" />);
     fireEvent.click(cover());
+    expect(coverLayer(container)).toHaveAttribute('data-direction', 'open');
     expect(coverLayer(container)).toHaveAttribute('aria-hidden', 'true');
     expect(coverLayer(container)).toHaveAttribute('inert');
     expect(entryTitle()).toBe('Hades');
+    expect(entryGroup()).toHaveClass('book-revealing');
+    expect(entryGroup()).toHaveFocus();
   });
 
-  it('removes the cover layer when its animation ends', () => {
+  it('hides the close button while the cover is moving', () => {
     const { container } = render(<JournalBook items={items} layout="spread" />);
     fireEvent.click(cover());
-    fireEvent.animationEnd(container.querySelector('.book-turn__leather')!);
-    expect(coverLayer(container)).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Cerrar el diario' })).not.toBeInTheDocument();
+    endCoverLayer(container);
+    expect(close()).toBeInTheDocument();
   });
 
-  it('removes the cover layer after the safety timeout', () => {
+  it('removes the layer and the hiding when the cover animation ends', () => {
+    const { container } = render(<JournalBook items={items} layout="spread" />);
+    fireEvent.click(cover());
+    endCoverLayer(container);
+    expect(coverLayer(container)).not.toBeInTheDocument();
+    expect(entryGroup()).not.toHaveClass('book-revealing');
+  });
+
+  it('removes the layer after the safety timeout', () => {
     vi.useFakeTimers();
     const { container } = render(<JournalBook items={items} layout="spread" />);
     fireEvent.click(cover());
@@ -177,28 +199,72 @@ describe('open and close animation', () => {
     expect(coverLayer(container)).not.toBeInTheDocument();
   });
 
+  it('ignores page turns while the cover is opening', () => {
+    const { container } = render(<JournalBook items={items} layout="spread" />);
+    fireEvent.click(cover());
+    fireEvent.click(next());
+    expect(entryTitle()).toBe('Hades');
+    endCoverLayer(container);
+    fireEvent.click(next());
+    expect(entryTitle()).toBe('Celeste');
+  });
+
   it('does not play any cover animation before the book has been opened', () => {
     const { container } = render(<JournalBook items={items} layout="spread" />);
     expect(coverLayer(container)).not.toBeInTheDocument();
-    expect(cover()).not.toHaveClass('book-cover--arriving');
   });
 
-  it('brings the cover back with an animation when the book is closed', () => {
+  it('makes the closed cover one page wide in a spread and full width in single', () => {
+    const spread = render(<JournalBook items={items} layout="spread" />);
+    expect(cover()).toHaveClass('book-cover--spread');
+    spread.unmount();
+    render(<JournalBook items={items} layout="single" />);
+    expect(cover()).not.toHaveClass('book-cover--spread');
+  });
+
+  it('closes by playing the opening backwards: the book stays until the cover has closed over it', () => {
     const { container } = render(<JournalBook items={items} layout="spread" />);
     openAndSettle(container);
     fireEvent.click(close());
-    expect(cover()).toHaveClass('book-cover--arriving');
+    expect(coverLayer(container)).toHaveAttribute('data-direction', 'close');
+    expect(entryGroup()).toHaveClass('book-hiding');
+    expect(screen.queryByRole('button', { name: /Abrir el diario/ })).not.toBeInTheDocument();
+    endCoverLayer(container);
+    expect(coverLayer(container)).not.toBeInTheDocument();
+    expect(cover()).toBeInTheDocument();
     expect(cover()).toHaveFocus();
   });
 
-  it('plays the opening animation again on every opening, not the arriving one', () => {
+  it('closes after the safety timeout if the animation event never comes', () => {
+    vi.useFakeTimers();
+    const { container } = render(<JournalBook items={items} layout="spread" />);
+    fireEvent.click(cover());
+    act(() => vi.advanceTimersByTime(BOOK_ANIMATION_SAFETY_MS));
+    fireEvent.click(close());
+    act(() => vi.advanceTimersByTime(BOOK_ANIMATION_SAFETY_MS));
+    expect(coverLayer(container)).not.toBeInTheDocument();
+    expect(cover()).toBeInTheDocument();
+  });
+
+  it('ignores page turns and repeated closes while the book is closing', () => {
     const { container } = render(<JournalBook items={items} layout="spread" />);
     openAndSettle(container);
     fireEvent.click(close());
+    fireEvent.click(next());
+    fireEvent.keyDown(entryGroup(), { key: 'ArrowRight' });
+    expect(entryTitle()).toBe('Hades');
+    expect(container.querySelectorAll('.book-turn--cover')).toHaveLength(1);
+  });
+
+  it('plays the opening again on every opening and starts from the first entry', () => {
+    const { container } = render(<JournalBook items={items} layout="spread" />);
+    openAndSettle(container);
+    fireEvent.click(next());
+    endTurn(container);
+    closeAndSettle(container);
     fireEvent.click(cover());
-    expect(coverLayer(container)).toBeInTheDocument();
-    fireEvent.click(close());
-    expect(coverLayer(container)).not.toBeInTheDocument();
+    expect(coverLayer(container)).toHaveAttribute('data-direction', 'open');
+    expect(entryTitle()).toBe('Hades');
   });
 });
 
@@ -219,8 +285,10 @@ describe('reduced motion', () => {
     fireEvent.click(cover());
     expect(coverLayer(container)).not.toBeInTheDocument();
     expect(container.querySelector('.book-turn')).not.toBeInTheDocument();
+    expect(entryGroup()).not.toHaveClass('book-revealing');
     fireEvent.click(close());
-    expect(cover()).not.toHaveClass('book-cover--arriving');
+    expect(container.querySelector('.book-turn')).not.toBeInTheDocument();
+    expect(cover()).toHaveFocus();
   });
 
   it('turns pages in single instantly too', () => {

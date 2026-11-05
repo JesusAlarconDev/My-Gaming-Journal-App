@@ -67,19 +67,66 @@ describe('PageTurnOverlay', () => {
 });
 
 describe('CoverOpenOverlay', () => {
-  it('is a decorative, inert layer that ends with its animation', () => {
+  const layer = (container: HTMLElement) => container.firstElementChild as HTMLElement;
+
+  it('is a decorative, inert layer', () => {
+    const { container } = render(
+      <CoverOpenOverlay layout="spread" direction="open" onDone={() => {}} />,
+    );
+    expect(layer(container)).toHaveAttribute('aria-hidden', 'true');
+    expect(layer(container)).toHaveAttribute('inert');
+    expect(layer(container).querySelectorAll('button, a, input, [tabindex]')).toHaveLength(0);
+  });
+
+  it('draws the cover front, its inside and a blank page for the book to open onto', () => {
+    const { container } = render(
+      <CoverOpenOverlay layout="spread" direction="open" onDone={() => {}} />,
+    );
+    expect(container.querySelector('.book-open__front')).toHaveTextContent('My Gaming Journal');
+    expect(container.querySelector('.book-open__back')).toBeInTheDocument();
+    expect(container.querySelector('.book-open__stage')).toBeInTheDocument();
+  });
+
+  it('lays the inside of the cover on the left page in a spread, but not in single', () => {
+    const spread = render(<CoverOpenOverlay layout="spread" direction="open" onDone={() => {}} />);
+    expect(spread.container.querySelector('.book-open__mask')).toBeInTheDocument();
+    spread.unmount();
+    const single = render(<CoverOpenOverlay layout="single" direction="open" onDone={() => {}} />);
+    expect(single.container.querySelector('.book-open__mask')).not.toBeInTheDocument();
+  });
+
+  it('describes the layout and direction for the styles', () => {
+    const open = render(<CoverOpenOverlay layout="single" direction="open" onDone={() => {}} />);
+    expect(layer(open.container)).toHaveAttribute('data-layout', 'single');
+    expect(layer(open.container)).toHaveAttribute('data-direction', 'open');
+    open.unmount();
+    const close = render(<CoverOpenOverlay layout="spread" direction="close" onDone={() => {}} />);
+    expect(layer(close.container)).toHaveAttribute('data-direction', 'close');
+  });
+
+  it('ends when its own animation ends', () => {
     const onDone = vi.fn();
-    const { container } = render(<CoverOpenOverlay onDone={onDone} />);
-    expect(container.firstElementChild).toHaveAttribute('aria-hidden', 'true');
-    expect(container.firstElementChild).toHaveAttribute('inert');
-    fireEvent.animationEnd(container.querySelector('.book-turn__leather')!);
+    const { container } = render(
+      <CoverOpenOverlay layout="spread" direction="open" onDone={onDone} />,
+    );
+    fireEvent.animationEnd(layer(container));
     expect(onDone).toHaveBeenCalledOnce();
+  });
+
+  it('does not end when an animation of an inner part bubbles up', () => {
+    const onDone = vi.fn();
+    const { container } = render(
+      <CoverOpenOverlay layout="spread" direction="open" onDone={onDone} />,
+    );
+    fireEvent.animationEnd(container.querySelector('.book-open__leaf')!);
+    fireEvent.animationEnd(container.querySelector('.book-open__assembly')!);
+    expect(onDone).not.toHaveBeenCalled();
   });
 
   it('also ends after the safety timeout', () => {
     vi.useFakeTimers();
     const onDone = vi.fn();
-    render(<CoverOpenOverlay onDone={onDone} />);
+    render(<CoverOpenOverlay layout="spread" direction="close" onDone={onDone} />);
     act(() => vi.advanceTimersByTime(BOOK_ANIMATION_SAFETY_MS));
     expect(onDone).toHaveBeenCalledOnce();
   });

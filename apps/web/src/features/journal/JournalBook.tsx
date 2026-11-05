@@ -57,9 +57,13 @@ export function JournalBook({
   const reducedMotion = usePrefersReducedMotion();
   const [turn, setTurn] = useState<TurnDirection | null>(null);
   const [opening, setOpening] = useState(false);
-  const [coverArriving, setCoverArriving] = useState(false);
+  const [closing, setClosing] = useState(false);
   const endTurn = useCallback(() => setTurn(null), []);
   const endOpening = useCallback(() => setOpening(false), []);
+  const endClosing = useCallback(() => {
+    setClosing(false);
+    setOpen(false);
+  }, []);
 
   useEffect(() => {
     if (open) entryRef.current?.focus();
@@ -73,20 +77,21 @@ export function JournalBook({
   const openBook = () => {
     setPosition(START_POSITION);
     setAnnouncement('');
-    setCoverArriving(false);
     setOpening(!reducedMotion);
     setOpen(true);
   };
 
+  // With motion the book stays rendered while the cover closes over it, and only then unmounts.
   const closeBook = () => {
+    if (closing) return;
     setTurn(null);
     setOpening(false);
-    setCoverArriving(!reducedMotion);
-    setOpen(false);
+    if (reducedMotion) setOpen(false);
+    else setClosing(true);
   };
 
   const goTo = (target: BookPosition, direction: TurnDirection) => {
-    if (turn) return; // A page is still turning: ignore repeated presses.
+    if (turn || opening || closing) return; // Something is still moving: ignore repeated presses.
     if (target === current) return; // Already at the end: nothing to turn.
     setPosition(target);
     const entry = items[target.entryIndex];
@@ -119,7 +124,8 @@ export function JournalBook({
   });
 
   return (
-    <div ref={containerRef}>
+    // Capped so the pages stay a comfortable reading size on very wide screens.
+    <div ref={containerRef} className="mx-auto w-full max-w-5xl">
       {open ? (
         <div ref={bookRef}>
           <div className="relative">
@@ -127,6 +133,7 @@ export function JournalBook({
               ref={entryRef}
               tabIndex={-1}
               role="group"
+              className={opening ? 'book-revealing' : closing ? 'book-hiding' : undefined}
               aria-label={
                 item
                   ? announcementLabel(current, layout, items.length, item.game.title)
@@ -145,14 +152,22 @@ export function JournalBook({
               )}
             </div>
             {turn && item && <PageTurnOverlay direction={turn} layout={layout} onDone={endTurn} />}
-            {opening && <CoverOpenOverlay onDone={endOpening} />}
-            <BookIconButton
-              label={t('book.close')}
-              onClick={closeBook}
-              className="absolute top-3 right-3 z-10"
-            >
-              <X aria-hidden="true" size={22} strokeWidth={2.5} />
-            </BookIconButton>
+            {(opening || closing) && (
+              <CoverOpenOverlay
+                layout={layout}
+                direction={closing ? 'close' : 'open'}
+                onDone={closing ? endClosing : endOpening}
+              />
+            )}
+            {!opening && !closing && (
+              <BookIconButton
+                label={t('book.close')}
+                onClick={closeBook}
+                className="absolute top-3 right-3 z-10"
+              >
+                <X aria-hidden="true" size={22} strokeWidth={2.5} />
+              </BookIconButton>
+            )}
           </div>
           <BookControls
             position={current}
@@ -166,7 +181,7 @@ export function JournalBook({
           </p>
         </div>
       ) : (
-        <BookCover ref={coverRef} onOpen={openBook} arriving={coverArriving} />
+        <BookCover ref={coverRef} onOpen={openBook} layout={layout} />
       )}
     </div>
   );

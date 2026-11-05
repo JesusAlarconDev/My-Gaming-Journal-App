@@ -129,3 +129,10 @@ describe('JournalBook edge cases', () => {
     expect(screen.getByText('Captura 1 de 3')).toBeInTheDocument();
   });
 });
+
+describe('JournalBook width', () => {
+  it('caps and centers the book so pages stay readable on very wide screens', () => {
+    const { container } = render(<JournalBook items={items} layout="spread" />);
+    expect(container.firstElementChild).toHaveClass('mx-auto', 'w-full', 'max-w-5xl');
+  });
+});
